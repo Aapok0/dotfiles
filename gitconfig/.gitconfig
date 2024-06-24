@@ -27,6 +27,6 @@
     lol = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(auto)%d%C(reset) %s %C(green)(%ar) %C(bold blue)<%an>%C(reset)' --abbrev-commit
     glog = log --graph --pretty=format:'%C(red)%h %C(green)%ad %C(blue)%aN%C(auto)%d %C(reset)%s' --date=short --all
     rdiff = !git fetch && git log @{u}..HEAD
-    alias = !~/workspace/gitconfig/alias.sh
+    alias = !$HOME/Workspace/dotfiles/gitconfig/alias.sh
 #[pager]
 #    log = less -+$LESS -MRF
