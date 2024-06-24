@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# Query directory path with interactive fzf, save directory name and check if session with that name exists
+zoxide_fzf_result_path="$( zoxide query -i )"
+zoxide_fzf_result="$(echo "${zoxide_fzf_result_path}" | awk -F / '{print $NF}' )"
+session_exists="$( tmux ls -F \#S | grep -x "${zoxide_fzf_result}" )"
+
+# Tmux doesn't allow session names with dot in the beginning.
+# If trying to get to dot directory, replace dot with underscore.
+if [[ $zoxide_fzf_result = .* ]]; then
+    zoxide_fzf_result="${zoxide_fzf_result/./_}"
+fi
+
+# If no session exists, create one, and if in session already, switch to it.
+if [ -z $session_exists ]; then
+    cd $zoxide_fzf_result_path
+    tmux new-session -ds $zoxide_fzf_result
+    if [ -z $TMUX ]; then
+        tmux attach-session -t $zoxide_fzf_result
+    else
+        tmux switch-client -t $zoxide_fzf_result
+    fi
+# If session exists, attach to it, and if in session already, switch to it.
+else
+    if [ -z $TMUX ]; then
+        tmux attach-session -t $zoxide_fzf_result
+    else
+        tmux switch-client -t $zoxide_fzf_result
+    fi
+fi
