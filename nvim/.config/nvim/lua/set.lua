@@ -18,6 +18,9 @@ opt.fileencoding = 'utf8'
 -- Use Unix as the standard file type
 opt.fileformats = 'unix,dos'
 
+-- Use system clipboard
+opt.clipboard = 'unnamedplus'
+
 -- Automatically reads any changes made to the current open file by someone else
 opt.autoread = true
 
