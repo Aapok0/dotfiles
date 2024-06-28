@@ -3,7 +3,7 @@
 The configuration and plugins I use currently. Plugins are installed and managed with TPM, which you can install with:
 
 ```bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+git clone https://github.com/tmux-plugins/tpm ~/tmux/plugins/tpm
 ```
 
 The other added plugins are installed with `prefix + I`

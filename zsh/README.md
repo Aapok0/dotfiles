@@ -1,12 +1,8 @@
 # ZSH configuration file
 
-ZSH configuration I currently use. I keep .zshrc, .zsh_history and other zdotfiles and themes and plugins directory under ~/.config/zsh. For it to work I've had to define the history file path in .zshrc, redefine $ZDOTDIR in .zshenv and link .zshenv to home directory in the following way:
+ZSH configuration I currently use. I keep .zshrc, .zsh_history and other zdotfiles and themes and plugins directory under ~/.config/zsh. For it to work I've had to define the history file path in .zshrc, redefine $ZDOTDIR in .zshenv and link .zshenv to home directory. The linking gets done by stow.
 
-```bash
-ln -sT ~/.config/zsh/.zshenv ~/.zshenv
-```
-
-Path in the beginning depends on the system you have. Plugins and themes need to be cloned from their Github repositories to themes and plugins directories before using them with the configuration. Same applies to the programs added to path at the end, which need to be installed.
+Plugins and themes need to be cloned from their Github repositories to themes and plugins directories before using them with the configuration. Same applies to the programs added to path at the end, which need to be installed.
 
 ## Themes and plugins
 

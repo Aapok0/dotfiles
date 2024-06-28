@@ -49,3 +49,168 @@ stow -vDt $HOME <directory-name-here>
 ```bash
 stow -vDt $HOME */
 ```
+
+## Configurations
+
+These are short introductions and requirements. More info can be found in the readmes of the subdirectories.
+
+### bat
+
+A cat replacement with syntax highlighting.
+
+### dunst
+
+A notification daemon I use with i3.
+
+### gitconfig
+
+Configuration file for git.
+
+#### Requirements
+
+- git-delta
+
+### i3
+
+A window manager I use instead of a desktop environment.
+
+#### Requirements
+
+Tools and apps:
+
+- kitty
+- firefox
+- thunar
+- amixer
+- playerctl
+- scrot
+- polkit-gnome
+- dex
+- feh
+- xset
+- dunst
+- picom
+- i3blocks
+- rofi
+- rofi-greenclip
+- autotiling
+
+Autostart apps:
+
+- any bluetooth app
+  - for example blueberry
+- any network app
+  - for example nm-applet
+
+Fonts:
+
+- MesloLGS NF
+
+Directories:
+
+- ~/Screenshots
+
+### kitty
+
+A fast gpu accelerated terminal emulator.
+
+#### Requirements
+
+Font:
+
+- MesloLGS NF (with linux)
+- Fira Code Nerd Font (with MacOS)
+
+### nvim
+
+Text editor I use for everything including programming.
+
+#### Requirements
+
+At least version 0.8
+
+Tools:
+
+- xclip
+- npm (node)
+- python
+
+### picom
+
+A compositor for X11. Used with i3 for some visual enhancements.
+
+### rofi
+
+A window application used to replace dmenu in i3.
+
+### skhd
+
+Keybinding tool for MacOS used to make keybindings for Yabai.
+
+### tmux
+
+Terminal multiplexer that I use to create multiple sessions for different contexts.
+
+#### Requirements
+
+- tmux plugin manager (tpm)
+  - clone it to `~/tmux/plugins/tpm`
+
+### tmux-tools
+
+Two scripts for creating tmux session based on a directory name found either with zoxide or fzf.
+
+#### Requirements
+
+- tmux
+- zoxide
+- fzf
+- bash
+
+### vim
+
+A great text editor. I prefer to use the newer fork of it neovim, but also have configurations for this one.
+
+### yabai
+
+A window manager for MacOS.
+
+### zsh
+
+An extended bourne shell with many improvements. I use it instead of bash.
+
+#### Requirements
+
+Plugins:
+
+- Fast Syntax Highlighting
+- ZSH Autosuggestions
+- ZSH Completions
+
+Prompt themes (choose one):
+
+- Spaceship
+  - Need to comment powerlevel10k lines and uncomment spaceship lines in .zshrc for this one.
+- Powerlevel10k
+
+Tools:
+
+- dircolors
+- eza
+- bat
+- neovim
+- tmux
+- fzf
+- zoxide
+- fd
+- tfswitch
+- nvm
+- pnpm
+- python3
+- pipx
+- flyctl
+- thefuck
+
+Mac specific:
+- coreutils
+  - Also need to add the path to .zshrc

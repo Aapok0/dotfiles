@@ -5,7 +5,7 @@
 - kitty
 - firefox
 - thunar
-- email app?
+- thunderbird
 - discord? other chat apps?
 - spotify?
 - bitwarden?
@@ -16,7 +16,7 @@
 - playerctl (play controls)
 - scrot (screenshot)
 - polkit-gnome (authorization)
-- dex ?
+- dex (autostart apps)
 - feh (background)
 - xset (powersavings for display)
 - dunst (notifications)
@@ -25,7 +25,7 @@
 - rofi (app menu / general menus)
 - rofi-greenclip (clipboard menu)
 - xset (gui settings), or xscreensaver?
-- do I want to use autotiling?
+- autotiling?
 
 ### Font
 
