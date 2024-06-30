@@ -88,9 +88,15 @@ Tools and apps:
 - dex
 - feh
 - xset
+- xrandr
+- arandr
 - dunst
 - picom
 - i3blocks
+- lightdm
+- gtk2
+- gtk3
+- gtk4
 - rofi
 - rofi-greenclip
 - autotiling
@@ -102,9 +108,15 @@ Autostart apps:
 - any network app
   - for example nm-applet
 
+Themes and icons:
+- catppuccin-gtk-theme-mocha
+- qogir-gtk-theme
+- qogir-icon-theme
+
 Fonts:
 
 - MesloLGS NF
+- FiraMono Nerd Font
 
 Directories:
 

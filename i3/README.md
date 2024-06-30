@@ -16,6 +16,7 @@ Configurations based on EndeavourOS.
 
 ### Tools used by i3
 
+- gtk2, gtk3 and gtk4 (theme)
 - amixer (mic controls)
 - playerctl (play controls)
 - scrot (screenshot)
@@ -29,11 +30,20 @@ Configurations based on EndeavourOS.
 - rofi (app menu / general menus)
 - rofi-greenclip (clipboard menu)
 - xset (gui settings), or xscreensaver?
+- xrandr (configure screen output = resolution)
+- arandr (gui for xrandr)
 - autotiling?
+
+### Themes and icons
+
+- catppuccin-gtk-theme-mocha
+- qogir-gtk-theme
+- qogir-icon-theme
 
 ### Font
 
 - MesloLGS NF Regular
+- FiraMono Nerd Font
 
 ### Autostart apps
 
