@@ -36,6 +36,7 @@ Configurations based on EndeavourOS.
 
 ### Themes and icons
 
+- gnome-themes-extra
 - catppuccin-gtk-theme-mocha
 - qogir-gtk-theme
 - qogir-icon-theme

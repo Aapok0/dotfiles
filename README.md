@@ -109,6 +109,7 @@ Autostart apps:
   - for example nm-applet
 
 Themes and icons:
+- gnome-themes-extra
 - catppuccin-gtk-theme-mocha
 - qogir-gtk-theme
 - qogir-icon-theme
