@@ -1,3 +1,7 @@
+# i3
+
+Configurations based on EndeavourOS.
+
 ## Requirements
 
 ### Integrated apps
