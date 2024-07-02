@@ -242,7 +242,7 @@ bindsym $mod+space exec --no-startup-id rofi -show drun \
         -config $HOME/.config/rofi/rofidmenu.rasi
 
 # Window menu
-bindsym $mod+space exec --no-startup-id rofi -modi window -show window \
+bindsym $mod+shift+space exec --no-startup-id rofi -modi window -show window \
         -config $HOME/.config/rofi/rofidmenu.rasi
 
 # Clipboard menu
