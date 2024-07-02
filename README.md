@@ -145,6 +145,8 @@ At least version 0.8
 Tools:
 
 - xclip
+- xsel
+- ripgrep
 - npm (node)
 - python
 

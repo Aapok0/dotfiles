@@ -7,18 +7,24 @@ The configurations and plugins I use currently. Packer is used as the package ma
 Neovim requires a third-party program to use the system clipboard. I use the the following:
 
 ```bash
-# Linux
-sudo apt-get install xclip
+# Debian
+sudo apt-get install xclip xsel
+
+# Arch
+sudo pacman -S xclip xsel
 
 # Mac
-brew install xclip
+brew install xclip xsel
 ```
 
 Telescope plugin's live grep requires ripgrep:
 
 ```bash
-# Linux
+# Debian
 sudo apt-get install ripgrep
+
+# Arch
+sudo pacman -S ripgrep
 
 # Mac
 brew install ripgrep
@@ -27,9 +33,12 @@ brew install ripgrep
 NPM required for some LSP servers:
 
 ```bash
-# Linux (adding nodesource)
+# Debian (adding nodesource)
 curl -sL https://deb.nodesource.com/setup_20.x | sudo bash -
 sudo apt-install nodejs
+
+# Arch
+sudo pacman -S node
 
 # Linux/Mac (using nvm -> URL will change with new releases)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
@@ -44,8 +53,11 @@ brew install node
 Python required for some LSP servers:
 
 ```bash
-# Linux
+# Debian
 sudo apt-install python3
+
+# Arch
+sudo pacman -S python
 
 # Mac
 brew install python3
