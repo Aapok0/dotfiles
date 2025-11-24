@@ -45,6 +45,14 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 
 ### PROMPT THEME
+# Starship theme - install with curl -sS https://starship.rs/install.sh | sh
+# - can also install with pacman extra repository
+# - Presets:
+# starship preset catppuccin-powerline -o ~/.config/starship.toml
+# starship preset tokyo-night -o ~/.config/starship.toml
+# starship preset gruvbox-rainbow -o ~/.config/starship.toml
+eval "$(starship init zsh)"
+
 # Spaceship theme - install from https://github.com/spaceship-prompt/spaceship-prompt
 #source $ZDOTDIR/themes/spaceship-prompt/spaceship.zsh-theme
 
@@ -66,12 +74,12 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 #SPACESHIP_CHAR_SYMBOL="❯"
 #SPACESHIP_CHAR_SUFFIX=" "
 
-# PowerLevel10K theme - install from https://github.com/romkatv/powerlevel10k
+# PowerLevel10K theme (NO LONGER SUPPORTED) - install from https://github.com/romkatv/powerlevel10k
 # Recommended to use MesloLGS NF font https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#meslo-nerd-font-patched-for-powerlevel10k
-source $ZDOTDIR/themes/powerlevel10k/powerlevel10k.zsh-theme
+#source $ZDOTDIR/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+#[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
 ### PLUGINS
 
@@ -111,7 +119,7 @@ alias ll='eza -laghF --icons --group-directories-first'
 alias la='eza -a --icons'
 
 # Alias tree to exa
-alias tree='exa -aFT --icons'
+alias tree='eza -aTF --icons'
 
 # Always use nvim
 alias vim='nvim'
@@ -137,9 +145,9 @@ alias tf='terraform'
 
 ### COMMAND LINE TOOLS
 # fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# Comment above and uncomment below for mac
-#eval "$(fzf --zsh)"
+eval "$(fzf --zsh)"
+# Comment above and uncomment below for debian
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # Theme - catpuccin mocha https://github.com/catppuccin/fzf
 export FZF_DEFAULT_OPTS=" \
 --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
@@ -192,17 +200,18 @@ eval "$(zoxide init --cmd cd zsh)"
 # theme - catpuccin mocha - install from https://github.com/catppuccin/bat
 export BAT_THEME="Catppuccin Mocha"
 
+# man page pager
+export MANPAGER='nvim +Man!'
+
 # thefuck
 eval $(thefuck --alias)
 
 # nvm
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+source /usr/share/nvm/init-nvm.sh
 
 # add flyctl to PATH
-export FLYCTL_INSTALL="${HOME}/.fly"
-export PATH="$FLYCTL_INSTALL/bin:$PATH"
+#export FLYCTL_INSTALL="${HOME}/.fly"
+#export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 # pnpm
 export PNPM_HOME="${HOME}/.local/share/pnpm"
@@ -214,7 +223,12 @@ esac
 
 # pipx (Ansible)
 # Created by `pipx` on 2023-08-17 07:33:49
-export PATH="$PATH:${HOME}/.local/bin"
+#export PATH="$PATH:${HOME}/.local/bin"
 
 # bin path for tfswitch
-export PATH="${HOME}/bin:$PATH"
+#export PATH="${HOME}/.local/bin:$PATH"
+
+# bin path for pyenv
+#export PYENV_ROOT="$HOME/.pyenv"
+#[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+#eval "$(pyenv init - zsh)"
