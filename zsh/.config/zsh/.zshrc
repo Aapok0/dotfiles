@@ -1,26 +1,37 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.config/zsh/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+################################################################################
+# PLATFORM DETECTION
+################################################################################
+
+OS_TYPE="$(uname -s)"
+if [[ "$OS_TYPE" == "Linux" ]]; then
+    DISTRO=$(lsb_release -si 2>/dev/null || echo "generic")
+else
+    DISTRO="darwin"
 fi
 
-### HISTORY CONFIG
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
+################################################################################
+# HISTORY CONFIG
+################################################################################
+# Keep 10000 lines of history within the shell and save it to ~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.config/zsh/.zsh_history
 
-# History won't save duplicates or lines starting with space, search won't show duplicates and history is shared between terminals
-setopt histignorealldups histfindnodups histignorespace sharehistory #incappendhistory = history is incrementally appended
+# History won't save duplicates or lines starting with space
+# Search won't show duplicates and history is shared between terminals
+setopt histignorealldups histfindnodups histignorespace sharehistory
 
 
-### DEFAULT EDITOR
+################################################################################
+# DEFAULT EDITOR
+################################################################################
 export EDITOR='nvim'
 export VISUAL='nvim'
 
 
-### COMPLETIONS
+################################################################################
+# COMPLETIONS
+################################################################################
 # Use modern completion system
 autoload -Uz compinit
 compinit
@@ -43,192 +54,213 @@ zstyle ':completion:*' verbose true
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
+################################################################################
+# PROMPT THEME
+################################################################################
 
-### PROMPT THEME
-# Starship theme - install with curl -sS https://starship.rs/install.sh | sh
-# - can also install with pacman extra repository
-# - Presets:
-# starship preset catppuccin-powerline -o ~/.config/starship.toml
-# starship preset tokyo-night -o ~/.config/starship.toml
-# starship preset gruvbox-rainbow -o ~/.config/starship.toml
+# Starship theme - install with: curl -sS https://starship.rs/install.sh | sh
+# Available presets:
+#   starship preset catppuccin-powerline -o ~/.config/starship.toml
+#   starship preset tokyo-night -o ~/.config/starship.toml
+#   starship preset gruvbox-rainbow -o ~/.config/starship.toml
 eval "$(starship init zsh)"
 
-# Spaceship theme - install from https://github.com/spaceship-prompt/spaceship-prompt
-#source $ZDOTDIR/themes/spaceship-prompt/spaceship.zsh-theme
 
-# Spaceship config - https://spaceship-prompt.sh/config/prompt/#Prompt-order
-#SPACESHIP_PROMPT_ORDER=(
-#    user          # Username section
-#    dir           # Current directory section
-#    host          # Hostname section
-#    git           # Git section (git_branch + git_status)
-#    exec_time     # Execution time
-#    line_sep      # Line break
-#    #vi_mode       # Vi-mode indicator
-#    jobs          # Background jobs indicator
-#    exit_code     # Exit code section
-#    char          # Prompt character
-#)
-#SPACESHIP_USER_SHOW=always
-#SPACESHIP_PROMPT_ADD_NEWLINE=true
-#SPACESHIP_CHAR_SYMBOL="❯"
-#SPACESHIP_CHAR_SUFFIX=" "
+################################################################################
+# PLUGINS
+################################################################################
 
-# PowerLevel10K theme (NO LONGER SUPPORTED) - install from https://github.com/romkatv/powerlevel10k
-# Recommended to use MesloLGS NF font https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#meslo-nerd-font-patched-for-powerlevel10k
-#source $ZDOTDIR/themes/powerlevel10k/powerlevel10k.zsh-theme
 
-# To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-#[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+# Fast-Syntax-Highlighting - https://github.com/zdharma-continuum/fast-syntax-highlighting
+[[ -f "$ZDOTDIR/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh" ]] && \
+    source "$ZDOTDIR/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
-### PLUGINS
+# ZSH-Autosuggestions - https://github.com/zsh-users/zsh-autosuggestions
+[[ -f "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+    source "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-# Fast-Syntax-Highlighting - install from https://github.com/zdharma-continuum/fast-syntax-highlighting
-source $ZDOTDIR/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+# ZSH-Completions - https://github.com/zsh-users/zsh-completions
+[[ -d "$ZDOTDIR/plugins/zsh-completions/src" ]] && \
+    fpath=("$ZDOTDIR/plugins/zsh-completions/src" $fpath)
 
-# ZSH-Autosuggestions - install from https://github.com/zsh-users/zsh-autosuggestions
-source $ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# ZSH-Completions - install from https://github.com/zsh-users/zsh-completions
-fpath=($ZDOTDIR/plugins/zsh-completions/src $fpath)
+################################################################################
+# SSH AGENT
+################################################################################
 
-### ALIASES AND KEYBINDINGS
-# Use vim keybindings even if EDITOR is set to something else
-bindkey -e
-
-# Enable color support of ls and grep
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+# Start SSH agent if not already running
+if ! pgrep -u "$USER" ssh-agent > /dev/null 2>&1; then
+    eval "$(ssh-agent -s)" > /dev/null
 fi
 
-# Listing aliases with ls
-#alias ll='ls -lahF --group-directories-first'
-#alias la='ls -A'
-#alias l='ls -CF'
 
-# Listing aliases with eza
+################################################################################
+# ALIASES AND KEYBINDINGS
+################################################################################
+
+# Use vim keybindings
+bindkey -e
+
+# Listing aliases with eza - https://github.com/eza-community/eza
 alias ls='eza'
 alias ll='eza -laghF --icons --group-directories-first'
 alias la='eza -a --icons'
+alias tree='eza -aT --icons'
 
-# Alias tree to exa
-alias tree='eza -aTF --icons'
-
-# Always use nvim
+# Editor and interpreter aliases
 alias vim='nvim'
-
-# Alias cat to batcat
-#alias cat='batcat'
-# Have batcat print longer files to terminal
-#export BAT_PAGER=never
-
-# Alias python3 to python
 alias python='python3'
 
-# New tmux session with name
+# Tmux aliases
 alias tmuxn='tmux new-session -s'
-# Attach to tmux session with name
 alias tmuxa='tmux attach-session -t'
-# New tmux session named as the directory currently in
 alias tmuxnd='tmux new-session -s ${PWD##*/}'
 
-# Shorter alias for terraform
+# Terraform alias
 alias tf='terraform'
 
+# Color support for grep
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
 
-### COMMAND LINE TOOLS
-# fzf
+
+################################################################################
+# COMMAND LINE TOOLS
+################################################################################
+
+# fzf - fuzzy finder
 eval "$(fzf --zsh)"
-# Comment above and uncomment below for debian
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# Theme - catpuccin mocha https://github.com/catppuccin/fzf
+
+# FZF theme - Catppuccin Mocha
 export FZF_DEFAULT_OPTS=" \
 --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
 --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
 --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
 
-# fzf-git - install from https://github.com/junegunn/fzf-git.sh
-source $ZDOTDIR/tools/fzf-git.sh/fzf-git.sh
+# fzf-git integration - https://github.com/junegunn/fzf-git.sh
+[[ -f "$ZDOTDIR/tools/fzf-git.sh/fzf-git.sh" ]] && \
+    source "$ZDOTDIR/tools/fzf-git.sh/fzf-git.sh"
 
-# fd
-# Use fd instead of find in fzf (change fdfind to fd in mac or non debian linux)
-export FZF_DEFAULT_COMMAND="fdfind --hidden --strip-cwd-prefix --exclude .git"
+# fd - fast find
+# Use fd as the default source for fzf listings
+case "$DISTRO" in
+    Debian|Ubuntu)
+        FD_CMD="fdfind"
+        ;;
+    *)
+        FD_CMD="fd"
+        ;;
+esac
+
+export FZF_DEFAULT_COMMAND="$FD_CMD --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fdfind --type=d --hidden --strip-cwd-prefix --exclude .git"
-# Use fd for listing path candidates.
-# - The first argument to the function ($1) is the base path to start traversal
-# - See the source code (completion.{bash,zsh}) for the details.
+export FZF_ALT_C_COMMAND="$FD_CMD --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# FZF completion functions - use fd for listing
 _fzf_compgen_path() {
-  fdfind --hidden --exclude .git . "$1"
-}
-# Use fd to generate the list for directory completion
-_fzf_compgen_dir() {
-  fdfind --type=d --hidden --exclude .git . "$1"
+    $FD_CMD --hidden --exclude .git . "$1"
 }
 
-# Use bat to show a preview of the file in fzf
+_fzf_compgen_dir() {
+    $FD_CMD --type=d --hidden --exclude .git . "$1"
+}
+
+# FZF preview options
 export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
-# Use eza to show a tree view of the files in directories in fzf
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-# Advanced customization of fzf preview options via _fzf_comprun function
-# - The first argument to the function is the name of the command.
-# - You should make sure to pass the rest of the arguments to fzf.
+# FZF custom preview function
 _fzf_comprun() {
-  local command=$1
-  shift
-
-  case "$command" in
-    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
-    export|unset) fzf --preview "eval 'echo $'{}"         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                   "$@" ;;
-    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
-  esac
+    local command=$1
+    shift
+    case "$command" in
+        cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+        export|unset) fzf --preview "eval 'echo $'{}"         "$@" ;;
+        ssh)          fzf --preview 'dig {}'                   "$@" ;;
+        *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
+    esac
 }
 
-# zoxide - this also aliases cd to z
+# zoxide - https://github.com/ajeetdsouza/zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
-# batcat
-# theme - catpuccin mocha - install from https://github.com/catppuccin/bat
+# bat - https://github.com/sharkdp/bat
 export BAT_THEME="Catppuccin Mocha"
 
 # man page pager
 export MANPAGER='nvim +Man!'
 
-# thefuck
+# thefuck - https://github.com/nvbn/thefuck
 eval $(thefuck --alias)
 
-# nvm
-source /usr/share/nvm/init-nvm.sh
-
-# add flyctl to PATH
-#export FLYCTL_INSTALL="${HOME}/.fly"
-#export PATH="$FLYCTL_INSTALL/bin:$PATH"
-
-# pnpm
+# pnpm - Node.js package manager
 export PNPM_HOME="${HOME}/.local/share/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-# pnpm end
 
-# pipx (Ansible)
-# Created by `pipx` on 2023-08-17 07:33:49
-#export PATH="$PATH:${HOME}/.local/bin"
 
-# bin path for tfswitch
-#export PATH="${HOME}/.local/bin:$PATH"
+################################################################################
+# PLATFORM-SPECIFIC CONFIGURATION
+################################################################################
 
-# bin path for pyenv
-#export PYENV_ROOT="$HOME/.pyenv"
-#[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-#eval "$(pyenv init - zsh)"
+case "$DISTRO" in
+    Debian|Ubuntu)
+        # NVM - Node Version Manager (Debian/Ubuntu package)
+        [[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
+        ;;
+    Arch|Fedora)
+        # NVM - Node Version Manager (user-installed)
+        [[ -s "$HOME/.nvm/init-nvm.sh" ]] && source "$HOME/.nvm/init-nvm.sh"
+        ;;
+    darwin)
+        # macOS Homebrew
+        [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+        
+        # GNU Coreutils for dircolors compatibility
+        [[ -d /opt/homebrew/opt/coreutils/libexec/gnubin ]] && \
+            export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+        
+        # Java (macOS specific)
+        [[ -x /usr/libexec/java_home ]] && \
+            export JAVA_HOME=$(/usr/libexec/java_home) && \
+            export PATH="$JAVA_HOME/bin:$PATH"
+        
+        # NVM - Node Version Manager (macOS)
+        [[ -s "$HOME/.nvm/init-nvm.sh" ]] && source "$HOME/.nvm/init-nvm.sh"
+        ;;
+esac
+
+# Docker completion - conditional sourcing
+command -v docker &> /dev/null && source <(docker completion zsh)
+
+
+################################################################################
+# OPTIONAL DEVELOPMENT TOOLS
+################################################################################
+
+# Pyenv - Python version manager
+# Install: https://github.com/pyenv/pyenv
+if [[ -d "$HOME/.pyenv" ]]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init - zsh)"
+fi
+
+# Tfswitch - Terraform version manager
+# Install: https://github.com/warrensbox/terraform-switcher
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
+
+# Batman - CLI for working with Finago
+# Install: place in ~/.local/bin
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+
+# Flyctl - Fly.io CLI
+# Install: https://fly.io/docs/getting-started/installing-flyctl/
+if [[ -d "$HOME/.fly" ]]; then
+    export FLYCTL_INSTALL="$HOME/.fly"
+    export PATH="$FLYCTL_INSTALL/bin:$PATH"
+fi
+
