@@ -10,8 +10,41 @@
     light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
 [merge]
     conflictstyle = diff3
+#    conflictstyle = zdiff3  # Better merge conflicts (Git 2.35+), test this later
 [diff]
-    colorMoved = default
+    colorMoved = plain
+    algorithm = histogram
+    mnemonicPrefix = true
+    renames = true
+[column]
+    ui = auto
+[branch]
+    sort = -committerdate
+[tag]
+    sort = version:refname
+[init]
+    defaultBranch = main
+[push]
+    default = simple
+    autoSetupRemote = true
+    followTags = true
+[fetch]
+    prune = false              # Set to false to keep local branches after remote deletion
+    pruneTags = false          # Paired with prune setting
+    all = true
+[help]
+    autocorrect = prompt
+[commit]
+    verbose = true
+[rerere]
+    enabled = true
+    autoupdate = true
+[rebase]
+    autoSquash = true
+    autoStash = true
+    updateRefs = true
+#[pull]
+#    rebase = true            # Rebase on pull instead of merge - test later
 [include]
     path = ~/.config/git/config.local
 [alias]
@@ -19,12 +52,23 @@
     co = checkout
     sw = switch
     save = !git add -A && git commit -m
+    ci = commit -m
     amend = !git add -A && git commit --amend --no-edit
     undo = reset HEAD~1 --mixed
+    unstage = reset HEAD --
+    discard = checkout --
+    reset-author = commit --amend --reset-author
+    fixup = commit --fixup
     br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:green)%(committerdate:short) %(color:blue)%(authorname)%(color:reset) %(contents:subject)' --sort=-committerdate
+    current = rev-parse --abbrev-ref HEAD
+    default = !git switch $(git config init.defaultBranch)
     last = log -1 HEAD --stat
     lol = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(auto)%d%C(reset) %s %C(green)(%ar) %C(bold blue)<%an>%C(reset)' --abbrev-commit
     glog = log --graph --pretty=format:'%C(red)%h %C(green)%ad %C(blue)%aN%C(auto)%d %C(reset)%s' --date=short --all
+    changed = diff --name-only @{u}..HEAD
+    ahead = log @{u}..HEAD --oneline
+    behind = log HEAD..@{u} --oneline
+    unstash-list = stash list --format='%gd - %s' -n 30
     rdiff = !git fetch && git log @{u}..HEAD
     alias = !$HOME/Workspace/dotfiles/gitconfig/alias.sh
 #[pager]
