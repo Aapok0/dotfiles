@@ -1,6 +1,3 @@
-[user]
-    name =
-    email =
 [core]
     editor = nvim
     whitespace = fix,trailing-space,tab-in-indent,-indent-with-non-tab,cr-at-eol
@@ -15,6 +12,8 @@
     conflictstyle = diff3
 [diff]
     colorMoved = default
+[include]
+    path = ~/.config/git/config.local
 [alias]
     st = status
     co = checkout
