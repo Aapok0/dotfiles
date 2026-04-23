@@ -32,9 +32,13 @@ export VISUAL='nvim'
 ################################################################################
 # COMPLETIONS
 ################################################################################
-# Use modern completion system
+# Use modern completion system with caching (refresh daily)
 autoload -Uz compinit
-compinit
+if [[ -n ${ZDOTDIR}/.zcompdump(#qNmh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
@@ -59,7 +63,7 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 ################################################################################
 
 # Starship theme - install with: curl -sS https://starship.rs/install.sh | sh
-# Available presets:
+# Favourite presets:
 #   starship preset catppuccin-powerline -o ~/.config/starship.toml
 #   starship preset tokyo-night -o ~/.config/starship.toml
 #   starship preset gruvbox-rainbow -o ~/.config/starship.toml
@@ -85,12 +89,22 @@ eval "$(starship init zsh)"
 
 
 ################################################################################
-# SSH AGENT
+# SSH AGENT & KEYS
 ################################################################################
 
 # Start SSH agent if not already running
 if ! pgrep -u "$USER" ssh-agent > /dev/null 2>&1; then
     eval "$(ssh-agent -s)" > /dev/null
+fi
+
+# Auto-add SSH keys on shell startup
+# If keys have passphrases, you'll be prompted once per session
+# To remove a passphrase: ssh-keygen -p -f ~/.ssh/id_<name_here>
+if [[ -d "$HOME/.ssh" ]]; then
+    for key in "$HOME"/.ssh/id_{ed25519,rsa,ecdsa}; do
+        [[ -f "$key" ]] && ssh-add -l 2>/dev/null | grep -q "$(basename $key)" || \
+            ssh-add "$key" 2>/dev/null
+    done
 fi
 
 
@@ -212,8 +226,14 @@ case "$DISTRO" in
         [[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
         ;;
     Arch|Fedora)
-        # NVM - Node Version Manager (user-installed)
-        [[ -s "$HOME/.nvm/init-nvm.sh" ]] && source "$HOME/.nvm/init-nvm.sh"
+        # NVM - Node Version Manager
+        # Check package manager location first (e.g. pacman -S nvm on Arch)
+        if [[ -f /usr/share/nvm/init-nvm.sh ]]; then
+            source /usr/share/nvm/init-nvm.sh
+        # Fall back to user-installed location
+        elif [[ -s "$HOME/.nvm/init-nvm.sh" ]]; then
+            source "$HOME/.nvm/init-nvm.sh"
+        fi
         ;;
     darwin)
         # macOS Homebrew
@@ -263,4 +283,70 @@ if [[ -d "$HOME/.fly" ]]; then
     export FLYCTL_INSTALL="$HOME/.fly"
     export PATH="$FLYCTL_INSTALL/bin:$PATH"
 fi
+
+
+################################################################################
+# PATH CLEANUP
+################################################################################
+
+# Remove duplicate PATH entries while preserving order
+_dedup_path() {
+    typeset -a paths
+    typeset -A seen
+    for path in ${(s/:/)PATH}; do
+        [[ -n "$path" && -z "${seen[$path]}" ]] && {
+            paths+=("$path")
+            seen[$path]=1
+        }
+    done
+    export PATH="${(j/:/)paths}"
+}
+
+_dedup_path
+unset -f _dedup_path
+
+
+################################################################################
+# DIAGNOSTIC FUNCTIONS
+################################################################################
+
+# Display ZSH configuration diagnostics
+zsh_diagnose() {
+    echo "=== ZSH Configuration Diagnostics ==="
+    echo "OS: $OS_TYPE | Distro: $DISTRO"
+    echo ""
+    echo "Installed tools:"
+    for tool in nvim docker fd fzf bat eza starship nvm pyenv tfswitch; do
+        if command -v "$tool" &>/dev/null; then
+            echo "  ✓ $tool"
+        else
+            echo "  ✗ $tool"
+        fi
+    done
+    echo ""
+    echo "PATH entries: $(echo $PATH | tr ':' '\n' | wc -l)"
+    echo "Config file size: $(wc -l < $ZDOTDIR/.zshrc) lines"
+    [[ -f "$ZDOTDIR/.zshrc.local" ]] && echo "Local config: ✓ loaded"
+    echo ""
+    # Check completion issues
+    local comp_issues=$(compaudit 2>/dev/null | wc -l)
+    if [[ $comp_issues -eq 0 ]]; then
+        echo "Completion cache: ✓ clean"
+    else
+        echo "Completion cache: ⚠ $comp_issues potential issues"
+    fi
+}
+
+
+################################################################################
+# LOCAL MACHINE CONFIGURATION
+################################################################################
+
+# Load machine-specific configuration (not in repo)
+# Use this for local aliases, exports, or overrides
+# Example contents:
+#   export MY_API_KEY="secret"
+#   alias mywork='cd ~/projects/mywork'
+#   export WORK_DIR="/path/to/work"
+[[ -f "$ZDOTDIR/.zshrc.local" ]] && source "$ZDOTDIR/.zshrc.local"
 

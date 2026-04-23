@@ -1,8 +1,11 @@
 # Ignore zsh history file
 .zsh_history
 
-# Ignore completion dump file
-.zcompdump
+# Ignore completion dump files (regenerated daily)
+.zcompdump*
+
+# Ignore local machine configuration (machine-specific secrets, aliases, exports)
+.zshrc.local
 
 # Ignore tools, plugins and themes directory
 tools/

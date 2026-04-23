@@ -1,156 +1,296 @@
-# ZSH configuration file
+# ZSH Configuration
 
-ZSH configuration I currently use. I keep .zshrc, .zsh_history and other zdotfiles and themes and plugins directory under ~/.config/zsh. For it to work I've had to define the history file path in .zshrc, redefine $ZDOTDIR in .zshenv and link .zshenv to home directory. The linking gets done by stow.
+Cross-platform ZSH configuration supporting **Debian**, **Ubuntu**, **Arch**, **Fedora**, and **macOS**.
 
-Plugins and themes need to be cloned from their Github repositories to themes and plugins directories before using them with the configuration. Same applies to the programs added to path at the end, which need to be installed.
+The configuration automatically detects your OS and distro, then loads platform-specific tools and exports accordingly. All ZSH dotfiles and plugins live in `~/.config/zsh/` (configured via `$ZDOTDIR` in `.zshenv`).
 
-## Themes and plugins
+## Key Features
 
-- [Spaceship prompt](https://github.com/spaceship-prompt/spaceship-prompt)
-- [PowerLevel10k prompt (currently in use)](https://github.com/romkatv/powerlevel10k)
-- [Fast Syntax Highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting)
-- [ZSH Autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
-- [ZSH Completions](https://github.com/zsh-users/zsh-completions)
+- **Platform Detection**: Automatically detects OS/distro and configures appropriately
+- **Multi-Machine Support**: Use `.zshrc.local` for machine-specific config (excluded from repo)
+- **Completion Caching**: Daily refresh for faster shell startup
+- **SSH Key Auto-Loading**: Automatically adds SSH keys on shell startup
+- **PATH Deduplication**: Prevents duplicate PATH entries
+- **Diagnostic Function**: Run `zsh_diagnose` to troubleshoot configuration
 
-## Core command line tools
+## Quick Start
 
-### eza
+### Setup
 
-Better ls to list directories and their contents. Aliased ls and tree to eza.
-
-If using debian based distro, use following commands to install:
-
-```bash
-sudo mkdir -p /etc/apt/keyrings
-wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-sudo apt update
-sudo apt install -y eza
-```
-
-### htop and btop
-
-Better resource and process monitoring. Prefer btop currently.
-
-### bat (batcat)
-
-More featured cat command.
-
-If using debian based distro, install newest release with .deb file from [here](https://github.com/sharkdp/bat/releases).
-
-### neovim
-
-Text/code editor I use. Config located [here](https://github.com/Aapok0/nvim). Aliased to vim.
-
-### tmux
-
-Session, window and pane manager. Config located [here](https://github.com/Aapok0/tmux).
-
-### fzf
-
-Fuzzy finder to look for files and commands more quickly. Easiest to install and configure from the source:
+Use [stow](https://www.gnu.org/software/stow/) to symlink the config:
 
 ```bash
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+cd ~/dotfiles
+stow zsh
 ```
 
-### fd
+This creates `~/.zshenv` → `dotfiles/zsh/.zshenv` and `~/.config/zsh` → `dotfiles/zsh/.config/zsh`.
 
-Alternative for find, that provides sensible filters.
+### Clone Plugins
 
-### zoxide
-
-Tool to make moving between directories faster. It remembers your old cd commands and can query them so you can move around with just a keyword.
-
-If using a debian based distro, install from source:
+Plugins are not included in the repo. Clone them to their respective directories:
 
 ```bash
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+# Plugins (into .config/zsh/plugins/)
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ~/.config/zsh/plugins/fast-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.config/zsh/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-completions.git ~/.config/zsh/plugins/zsh-completions
+
+# Tools (into .config/zsh/tools/)
+git clone https://github.com/junegunn/fzf-git.sh.git ~/.config/zsh/tools/fzf-git.sh
 ```
 
-### ripgrep
+## Plugins
 
-Better recursive grep to current directory and subdirectories with regex pattern. Used in neovim telescope plugin.
+- [Fast Syntax Highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) – Syntax highlighting as you type
+- [ZSH Autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) – Command suggestions from history
+- [ZSH Completions](https://github.com/zsh-users/zsh-completions) – Additional completion definitions
+- [fzf-git](https://github.com/junegunn/fzf-git.sh) – Git integrations with fzf
 
-### entr
+## Prompt Theme
 
-Runs commands , if target file/s change. Good for programming and testing.
+- [Starship](https://starship.rs/) – Fast, customizable, cross-platform prompt (currently in use)
 
-### xclip
+Install:
+```bash
+curl -sS https://starship.rs/install.sh | sh
+```
 
-Clipboard command line tool. I use it especially to copy paste with clipboard in neovim.
+Available presets: `catppuccin-powerline`, `tokyo-night`, `gruvbox-rainbow`, etc.
 
-### tfswitch
+```bash
+starship preset catppuccin-powerline -o ~/.config/starship.toml
+```
 
-Command line tool to install and switch between different versions of terraform. In debian based distros it can be installed with:
+## Core Command Line Tools
+
+### Essential
+
+| Tool | Purpose | Install |
+|------|---------|---------|
+| **neovim** | Text/code editor (aliased to `vim`) | [nvim.io](https://neovim.io/)<br/> Config: [Aapok0/nvim](https://github.com/Aapok0/nvim) |
+| **eza** | Better `ls` for listing files | `pacman -S eza` / `apt install eza` / `brew install eza` |
+| **bat** | Cat with syntax highlighting | `pacman -S bat` / `apt install bat` / `brew install bat` |
+| **fzf** | Fuzzy finder for files/commands | `pacman -S fzf` / `apt install fzf` / `brew install fzf` |
+| **fd** | Fast alternative to `find` | `pacman -S fd` / `apt install fd-find` / `brew install fd` |
+| **zoxide** | Smarter directory navigation | `pacman -S zoxide` / See [zoxide.rs](https://zoxide.rs/) for other distros |
+| **ripgrep** | Fast recursive grep with regex | `pacman -S ripgrep` / `apt install ripgrep` / `brew install ripgrep` |
+
+### Additional
+
+| Tool | Purpose | Install |
+|------|---------|---------|
+| **tmux** | Session/window/pane manager | `pacman -S tmux` / `apt install tmux` / `brew install tmux`<br/> Config: [Aapok0/tmux](https://github.com/Aapok0/tmux) |
+| **thefuck** | Autocorrect mistyped commands | `pacman -S thefuck` / `pip install thefuck` / `brew install thefuck` |
+| **tldr** | Quick command examples | `pacman -S tldr` / `npm install -g tldr` / `brew install tldr` |
+| **btop/htop** | Resource/process monitoring | `pacman -S btop` / `apt install btop` / `brew install btop` |
+| **xclip** | Clipboard management | `pacman -S xclip` / `apt install xclip` / (macOS has native support) |
+| **entr** | Run commands when files change | `pacman -S entr` / `apt install entr` / `brew install entr` |
+
+### Node.js & NVM
+
+The configuration automatically detects your NVM installation:
+
+**Debian/Ubuntu** (package manager):
+```bash
+sudo apt install nvm
+```
+
+**Arch/Fedora** (package manager):
+```bash
+pacman -S nvm      # Arch
+dnf install nvm    # Fedora
+```
+
+**macOS or manual install** (nvm installer):
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```
+
+Then use NVM:
+```bash
+nvm list-remote
+nvm install 20
+nvm use 20
+```
+
+### Python Version Management (Optional)
+
+**Pyenv** – Python version manager:
+
+```bash
+# Install
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+
+# Use
+pyenv install 3.11
+pyenv local 3.11
+```
+
+Configuration auto-detects if `~/.pyenv` exists.
+
+### Terraform Version Management (Optional)
+
+**Tfswitch** – Terraform version switcher:
 
 ```bash
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-### NodeJS and npm
+Installs to `~/bin/tfswitch`. Configuration auto-detects if `~/bin` exists.
 
-For everything javascript and dependency for many other tools. Installed with:
+## Machine-Specific Configuration
 
-```bash
-# Linux (adding nodesource)
-curl -sL https://deb.nodesource.com/setup_20.x | sudo bash -
-sudo apt-install nodejs
+For settings specific to one machine (API keys, work paths, aliases), create `~/.config/zsh/.zshrc.local`:
 
-# Linux/Mac (using nvm -> URL will change with new releases)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-source ~/.config/zsh/.zshrc
-nvm list-remote
-nvm install <version>
+```zsh
+# ~/.config/zsh/.zshrc.local
+# Example:
 
-# Mac
-brew install node
+export MY_API_KEY="secret123"
+export WORK_DIR="/mnt/work"
+
+alias work='cd $WORK_DIR'
+alias prod='ssh user@prod.example.com'
+
+# Override tools for this machine
+export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/docker.sock"
 ```
 
-### tldr
+This file is **auto-loaded if it exists** and is in `.gitignore` (won't be committed).
 
-Tool to show quick tips how to use common command line tools.
+## Diagnostics
 
-In debian based distros it's easiest to install with npm:
-
-```bash
-sudo npm install -g tldr
-```
-
-In mac use homebrew and install the rust client:
+Run this command to check your configuration:
 
 ```bash
-brew install tlrc
+zsh_diagnose
 ```
 
-### thefuck
+Output:
+```
+=== ZSH Configuration Diagnostics ===
+OS: Linux | Distro: Arch
+Installed tools:
+  ✓ nvim
+  ✓ docker
+  ✓ fd
+  ✓ fzf
+  ✓ bat
+  ✓ eza
+  ✓ starship
+  ✓ nvm
+  ✗ pyenv
+  ✗ tfswitch
 
-Tool to autocorrect a command you fucked up earlier.
+PATH entries: 28
+Config file size: 354 lines
+Local config: ✓ loaded
 
-In debian based distros it's easiest to install with pip:
+Completion cache: ✓ clean
+```
+
+## SSH Keys
+
+SSH keys are auto-loaded on shell startup (if they exist in `~/.ssh/`).
+
+Supported key types: `id_ed25519`, `id_rsa`, `id_ecdsa`
+
+### Setup SSH Keys
+
+Generate a new key:
+```bash
+ssh-keygen -t ed25519 -C "your@email.com"
+```
+
+For convenience, remove the passphrase (recommended for personal dev machines):
+```bash
+ssh-keygen -p -f ~/.ssh/id_ed25519
+# When prompted: leave "New passphrase" empty, then confirm
+```
+
+For production machines, keep the passphrase. You'll be prompted once per session.
+
+## Aliases
+
+| Alias | Command |
+|-------|---------|
+| `ls`, `ll`, `la` | eza-based file listing |
+| `tree` | `eza -aT --icons` |
+| `vim` | `nvim` |
+| `python` | `python3` |
+| `tmuxn` | Create named tmux session |
+| `tmuxa` | Attach to tmux session |
+| `tmuxnd` | Create session named after current dir |
+| `tf` | `terraform` |
+| `grep`, `fgrep`, `egrep` | Color-enabled versions |
+
+## Platform-Specific Setup
+
+### Debian/Ubuntu
+
+Additional tools best installed via package manager:
 
 ```bash
-pip install thefuck --user
+sudo apt update
+sudo apt install -y \
+    eza bat fd-find fzf ripgrep zoxide \
+    tmux thefuck tldr btop xclip entr
 ```
 
-Use homebrew on mac:
+### Arch/Fedora
 
 ```bash
-brew install thefuck
+# Arch
+pacman -S eza bat fd fzf ripgrep zoxide tmux thefuck tldr btop xclip entr nvm
+
+# Fedora
+dnf install eza bat fd fzf ripgrep zoxide tmux thefuck tldr btop xclip entr
 ```
 
-## Extra step for Mac
+### macOS
 
-Dircolors don't exist in Mac be default, but they can be downloaded as part of coreutils:
+Install via Homebrew:
 
 ```bash
-brew install coreutils
+brew install eza bat fd fzf ripgrep zoxide tmux thefuck tldr btop xclip entr nvm starship
 ```
 
-Also add the following to .zshrc:
+**Note**: macOS includes native clipboard support; `xclip` is optional.
 
-```bash
-export PATH='/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH'
+## Configuration Structure
+
 ```
+~/.config/zsh/
+├── .zshrc              # Main configuration (this repo)
+├── .zshrc.local        # Machine-specific (excluded from repo, optional)
+├── .zsh_history        # History file (excluded from repo)
+├── .zcompdump*         # Completion cache (excluded from repo)
+├── .zshenv             # Environment setup (this repo)
+├── plugins/            # Downloaded plugins (excluded from repo)
+│   ├── fast-syntax-highlighting/
+│   ├── zsh-autosuggestions/
+│   └── zsh-completions/
+└── tools/              # Downloaded tools (excluded from repo)
+    └── fzf-git.sh/
+```
+
+## Troubleshooting
+
+**Issue**: "command not found" for a tool
+- Run `zsh_diagnose` to check if tools are installed
+- Verify tool is in PATH: `echo $PATH`
+- Check `.zshrc.local` isn't masking the PATH
+
+**Issue**: Shell startup is slow
+- Check completion cache: `zsh_diagnose`
+- List loaded files: `set +x; source ~/.zshrc; set -x 2>&1 | head -20`
+
+**Issue**: SSH keys not loading
+- Check keys exist: `ls -la ~/.ssh/id_*`
+- Manual test: `ssh-add ~/.ssh/id_ed25519`
+- Check if you have passphrase set: `ssh-keygen -y -f ~/.ssh/id_ed25519`
+
+**Issue**: Platform detection not working
+- Check distro detection: `lsb_release -si` or `uname -s`
+- Verify `.zshenv` is sourced: `echo $ZDOTDIR`
