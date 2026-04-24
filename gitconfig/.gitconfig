@@ -9,8 +9,8 @@
     side-by-side = true
     light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
 [merge]
-    conflictstyle = diff3
-#    conflictstyle = zdiff3  # Better merge conflicts (Git 2.35+), test this later
+#    conflictstyle = diff3
+    conflictstyle = zdiff3  # Better merge conflicts (Git 2.35+), test this later
 [diff]
     colorMoved = plain
     algorithm = histogram
