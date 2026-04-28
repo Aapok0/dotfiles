@@ -12,7 +12,7 @@ fi
 ################################################################################
 # HISTORY CONFIG
 ################################################################################
-# Keep 10000 lines of history within the shell and save it to ~/.zsh_history
+# Keep 10000 lines of history within the shell and save it to ~/.config/zsh/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.config/zsh/.zsh_history
@@ -45,7 +45,11 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
+if (( $+commands[dircolors] )); then
+    eval "$(dircolors -b)"
+elif (( $+commands[gdircolors] )); then
+    eval "$(gdircolors -b)"
+fi
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
@@ -249,7 +253,9 @@ case "$DISTRO" in
             export PATH="$JAVA_HOME/bin:$PATH"
         
         # NVM - Node Version Manager (macOS)
-        [[ -s "$HOME/.nvm/init-nvm.sh" ]] && source "$HOME/.nvm/init-nvm.sh"
+        [[ -s "$HOME/.config/nvm/nvm.sh" ]] && \
+            export NVM_DIR="$HOME/.config/nvm" && \
+            source "$HOME/.config/nvm/nvm.sh"
         ;;
 esac
 
