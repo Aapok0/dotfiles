@@ -1,5 +1,9 @@
 -- Telescope https://github.com/nvim-telescope/telescope.nvim#usage
+local telescope = require('telescope')
 local builtin = require('telescope.builtin')
+
+-- Load fzf-native for better sorting performance
+telescope.load_extension('fzf')
 
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})

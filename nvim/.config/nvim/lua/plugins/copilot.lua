@@ -21,11 +21,11 @@ return {
           },
         },
         suggestion = {
-          enabled = false,
-          auto_trigger = false,
+          enabled = true,
+          auto_trigger = true,
           debounce = 75,
           keymap = {
-            accept = "<M-l>",
+            accept = "<M-y>",
             accept_word = false,
             accept_line = false,
             next = "<M-]>",
@@ -50,28 +50,16 @@ return {
     end
   },
   {
-    "zbirenbaum/copilot-cmp",
-    config = function ()
-      require("copilot_cmp").setup()
-    end
-  },
-  {
     "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "canary",
     dependencies = {
-      { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
-      { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+      { "zbirenbaum/copilot.lua" },
     },
     opts = {
-      debug = true, -- Enable debugging
       window = {
         layout = 'float',
-        relative = 'cursor',
-        width = 1,
+        width = 0.8,
         height = 0.4,
-        row = 1
       }
-      -- See Configuration section for rest
     },
   },
 }

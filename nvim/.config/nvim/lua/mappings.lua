@@ -57,7 +57,7 @@ key("n", "<leader>cq",
       end
   end
 )
--- Show Copilot help actions with telescope (DOES NOT WORK)
+-- Show Copilot help actions with telescope
 key("n", "<leader>ch",
   function()
     local actions = require("CopilotChat.actions")

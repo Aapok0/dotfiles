@@ -32,9 +32,13 @@ opt.hidden = true
 opt.backup = false
 opt.swapfile = false
 
--- Undofile -> persistent undo
+-- Undofile -> persistent undo (XDG-compliant location)
 opt.undofile = true
-opt.undodir = os.getenv('HOME') ..  '/.vim/undodir'
+local undodir = vim.fn.stdpath("state") .. "/undo"
+if not vim.uv.fs_stat(undodir) then
+  vim.fn.mkdir(undodir, "p")
+end
+opt.undodir = undodir
 
 -- Show line number
 opt.number = true
@@ -74,9 +78,6 @@ opt.hlsearch = true
 
 -- Search incrementally as you write
 opt.incsearch = true
-
--- Don't redraw while executing macros
-opt.lazyredraw = true
 
 -- No need to backslash special characters with regex
 opt.magic = true
@@ -145,6 +146,9 @@ vim.api.nvim_create_autocmd('FileType', {
     'terraform-vars',
     'markdown',
     'lua',
+    'yaml',
+    'json',
+    'toml',
   },
   command = 'setlocal shiftwidth=2 tabstop=2 softtabstop=2'
 })
@@ -175,7 +179,4 @@ opt.wrap = true
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 
--- Disable virtual text for diagnostics plugins (using trouble plugin instead)
-vim.diagnostic.config({
-  virtual_text = false,
-})
+-- Diagnostic config moved to lsp.lua
