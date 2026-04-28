@@ -1,231 +1,165 @@
 # Dotfiles
 
-These are all my configuration files I use with CLI tools in Linux and MacOS. The configs can be added to home directory and with GNU stow.
+Configuration files for CLI tools and development environments on Linux and macOS, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Setup
 
-### 1. Install stow, if you haven't already:
-
-#### Debian based distros
+### 1. Install stow
 
 ```bash
+# Debian
 sudo apt install stow
-```
 
-#### Arch based distros
-
-```bash
+# Arch
 sudo pacman -S stow
-```
 
-#### MacOS
+# Fedora
+sudo dnf install stow
 
-```
+# macOS
 brew install stow
 ```
 
-### 2. Use stow to symlink configuration files and directories (in the dotfiles directory):
-
-#### Selected configurations
+### 2. Symlink configurations (from the dotfiles directory)
 
 ```bash
-stow -vRt $HOME <directory-name-here>
-```
+# Selected configurations
+stow -vRt $HOME <directory-name>
 
-#### All configurations
-```bash
+# All configurations
 stow -vRt $HOME */
 ```
 
-### 3. Delete configurations as needed (in the dotfiles directory):
-
-#### Selected configurations
+### 3. Remove configurations
 
 ```bash
-stow -vDt $HOME <directory-name-here>
-```
+# Selected configurations
+stow -vDt $HOME <directory-name>
 
-#### All configurations
-```bash
+# All configurations
 stow -vDt $HOME */
 ```
 
 ## Configurations
 
-These are short introductions and requirements. More info can be found in the readmes of the subdirectories.
+More details can be found in the README of each subdirectory.
 
 ### bat
 
-A cat replacement with syntax highlighting.
-
-### dunst
-
-A notification daemon I use with i3.
+A `cat` replacement with syntax highlighting. Uses the Catppuccin Mocha theme.
 
 ### gitconfig
 
-Configuration file for git.
+Git configuration with sensible defaults, extensive aliases, and delta integration for syntax-highlighted diffs.
 
 #### Requirements
 
-- git-delta
+- [git-delta](https://github.com/dandavella/delta)
 
-### i3
+#### Setup
 
-A window manager I use instead of a desktop environment.
-
-#### Requirements
-
-Tools and apps:
-
-- kitty
-- firefox
-- thunar
-- amixer
-- playerctl
-- scrot
-- polkit-gnome
-- dex
-- feh
-- xset
-- xrandr
-- arandr
-- dunst
-- picom
-- i3blocks
-- lightdm
-- gtk2
-- gtk3
-- gtk4
-- rofi
-- rofi-greenclip
-- autotiling
-
-Autostart apps:
-
-- any bluetooth app
-  - for example blueberry
-- any network app
-  - for example nm-applet
-
-Themes and icons:
-- gnome-themes-extra
-- catppuccin-gtk-theme-mocha
-- qogir-gtk-theme
-- qogir-icon-theme
-
-Fonts:
-
-- MesloLGS NF
-- FiraMono Nerd Font
-
-Directories:
-
-- ~/Screenshots
+Create a local config for your credentials at `~/.config/git/config.local`.
 
 ### kitty
 
-A fast gpu accelerated terminal emulator.
+GPU-accelerated terminal emulator with Catppuccin colors and transparency.
 
 #### Requirements
 
 Font:
 
-- MesloLGS NF (with linux)
-- Fira Code Nerd Font (with MacOS)
+- Meslo Nerd Font (Linux)
+- Fira Code Nerd Font (macOS)
+
+### lightdm
+
+Display manager and slick-greeter configuration for the login screen. Linux only.
+
+#### Requirements
+
+- lightdm
+- lightdm-slick-greeter
 
 ### nvim
 
-Text editor I use for everything including programming.
+Neovim configuration in Lua with lazy.nvim plugin manager. Includes LSP support, Telescope fuzzy finder, Treesitter, GitHub Copilot, and more.
 
 #### Requirements
 
-At least version 0.8
-
-Tools:
-
-- xclip
-- xsel
 - ripgrep
-- npm (node)
-- python
+- A [Nerd Font](https://www.nerdfonts.com/)
+- npm (for some LSP servers)
+- python3
 
-### picom
+#### Setup
 
-A compositor for X11. Used with i3 for some visual enhancements.
+1. Symlink the config with stow
+2. Open Neovim — plugins auto-install via lazy.nvim
+3. Run `:Mason` to install LSP servers and formatters
 
-### rofi
+### starship
 
-A window application used to replace dmenu in i3.
+Cross-shell prompt configuration using a modified Gruvbox preset.
 
-### skhd
+#### Requirements
 
-Keybinding tool for MacOS used to make keybindings for Yabai.
+- [Starship](https://starship.rs/)
 
 ### tmux
 
-Terminal multiplexer that I use to create multiple sessions for different contexts.
+Terminal multiplexer configuration with TPM plugin manager and vim-tmux-navigator integration.
 
 #### Requirements
 
-- tmux plugin manager (tpm)
-  - clone it to `~/tmux/plugins/tpm`
+- [TPM](https://github.com/tmux-plugins/tpm) — clone to `~/tmux/plugins/tpm`
+
+#### Setup
+
+After symlinking, press `prefix + I` inside tmux to install plugins.
 
 ### tmux-tools
 
-Two scripts for creating tmux session based on a directory name found either with zoxide or fzf.
+Two utility scripts for creating/attaching tmux sessions using directory names:
+
+- `tmuxz` — create/attach a session by zoxide keyword
+- `tmuxf` — fuzzy-find a zoxide directory with fzf and create/attach a session
 
 #### Requirements
 
 - tmux
 - zoxide
 - fzf
-- bash
 
 ### vim
 
-A great text editor. I prefer to use the newer fork of it neovim, but also have configurations for this one.
-
-### yabai
-
-A window manager for MacOS.
-
-### zsh
-
-An extended bourne shell with many improvements. I use it instead of bash.
+Legacy Vim configuration with Vundle. Neovim is preferred — see `nvim` above.
 
 #### Requirements
 
-Plugins:
+- A [Nerd Font](https://www.nerdfonts.com/) (for NERDTree icons)
 
-- Fast Syntax Highlighting
-- ZSH Autosuggestions
-- ZSH Completions
+### zsh
 
-Prompt themes (choose one):
+Cross-platform ZSH configuration with automatic OS/distro detection, completion caching, SSH key auto-loading, and PATH deduplication. Uses Starship for the prompt.
 
-- Spaceship
-  - Need to comment powerlevel10k lines and uncomment spaceship lines in .zshrc for this one.
-- Powerlevel10k
+#### Requirements
+
+Plugins (clone to `~/.config/zsh/plugins/`):
+
+- [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting)
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
+- [zsh-completions](https://github.com/zsh-users/zsh-completions)
+- [fzf-git.sh](https://github.com/junegunn/fzf-git.sh)
 
 Tools:
 
-- dircolors
 - eza
 - bat
-- neovim
-- tmux
 - fzf
 - zoxide
 - fd
-- tfswitch
-- nvm
-- pnpm
-- python3
-- pipx
-- flyctl
-- thefuck
+- starship
 
-Mac specific:
-- coreutils
-  - Also need to add the path to .zshrc
+#### Setup
+
+Use `~/.zshrc.local` for machine-specific settings (not tracked by git).
