@@ -5,6 +5,7 @@ return {
     event = "InsertEnter",
     config = function()
       require("copilot").setup({
+        copilot_model = "claude-haiku-4.5",
         panel = {
           enabled = true,
           auto_refresh = false,
