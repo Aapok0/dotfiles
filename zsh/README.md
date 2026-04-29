@@ -49,18 +49,21 @@ git clone https://github.com/junegunn/fzf-git.sh.git ~/.config/zsh/tools/fzf-git
 
 ## Prompt Theme
 
-- [Starship](https://starship.rs/) – Fast, customizable, cross-platform prompt (currently in use)
+- [Starship](https://starship.rs/) – Fast, customizable, cross-platform prompt
 
-Install:
+Using a custom **"Dusk"** theme — a muted pastel powerline prompt with slanted separators. See the [starship config README](../starship/README.md) for details on the palette, segments, and font requirements.
+
+Install starship:
 ```bash
 curl -sS https://starship.rs/install.sh | sh
 ```
 
-Available presets: `catppuccin-powerline`, `tokyo-night`, `gruvbox-rainbow`, etc.
-
+Symlink the config:
 ```bash
-starship preset catppuccin-powerline -o ~/.config/starship.toml
+cd ~/path/to/dotfiles && stow starship
 ```
+
+**Requires a Nerd Font** (e.g. `ttf-jetbrains-mono-nerd`) — see the [starship README](../starship/README.md#font-setup) for install commands and the [kitty README](../kitty/README.md#font) for terminal font setup.
 
 ## Core Command Line Tools
 

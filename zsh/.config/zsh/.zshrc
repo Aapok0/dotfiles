@@ -66,11 +66,10 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 # PROMPT THEME
 ################################################################################
 
-# Starship theme - install with: curl -sS https://starship.rs/install.sh | sh
-# Favourite presets:
-#   starship preset catppuccin-powerline -o ~/.config/starship.toml
-#   starship preset tokyo-night -o ~/.config/starship.toml
-#   starship preset gruvbox-rainbow -o ~/.config/starship.toml
+# Starship prompt with custom "Dusk" theme
+# Config: ~/dotfiles/starship/.config/starship.toml
+# Setup: cd ~/dotfiles && stow starship
+# Requires: Nerd Font (e.g. ttf-jetbrains-mono-nerd)
 eval "$(starship init zsh)"
 
 
