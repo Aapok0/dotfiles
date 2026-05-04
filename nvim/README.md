@@ -17,10 +17,21 @@ Formatters and linters used by conform.nvim and nvim-lint are **not** auto-insta
 
 ```bash
 # Via Mason (inside Neovim)
-:MasonInstall shfmt stylua prettier ruff hadolint tflint ansible-lint
+:MasonInstall shfmt stylua prettier ruff hadolint tflint ansible-lint shellcheck
 
 # Or via system package manager (example for macOS)
-brew install shfmt stylua prettier ruff hadolint tflint ansible-lint
+brew install shfmt stylua prettier ruff hadolint tflint ansible-lint shellcheck
+
+# Arch
+sudo pacman -S shfmt stylua prettier python-ruff hadolint tflint ansible-lint shellcheck
+
+# Fedora
+sudo dnf install ShellCheck
+# Most others available via pip, npm, or Mason
+
+# Debian/Ubuntu
+sudo apt-get install shellcheck
+# Most others available via pip, npm, or Mason
 ```
 
 ## Plugins
@@ -58,7 +69,7 @@ brew install shfmt stylua prettier ruff hadolint tflint ansible-lint
 | Plugin | Description |
 |---|---|
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Format on save. Supports shfmt, stylua, ruff, prettier, terraform fmt. Run `:ConformInfo` to check status |
-| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | Async linting on save/insert leave. Supports hadolint, tflint, ansible-lint |
+| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | Async linting on save/insert leave. Supports hadolint, tflint, ansible-lint, shellcheck |
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics list panel |
 | [todo-comments.nvim](https://github.com/folke/todo-comments.nvim) | Highlights `TODO`, `FIXME`, `HACK` comments in code |
 

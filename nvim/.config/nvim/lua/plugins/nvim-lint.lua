@@ -8,6 +8,8 @@ return {
       terraform = { "tflint" },
       tf = { "tflint" },
       ansible = { "ansible_lint" },
+      bash = { "shellcheck" },
+      sh = { "shellcheck" },
     }
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
       callback = function()
