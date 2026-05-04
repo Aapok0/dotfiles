@@ -1,0 +1,54 @@
+# Atuin shell history configuration
+
+## General
+# Store history in SQLite database
+db_path = "~/.local/share/atuin/history.db"
+
+## Search
+# fuzzy search style — prefix, substring, or fuzzy
+search_mode = "fuzzy"
+
+# Which search mode to use when the prefix is changed
+filter_mode = "global"
+
+# Search UI style — compact, full, or auto
+style = "full"
+
+# Show a preview of the full command text below the results list
+# (useful for long/multi-line commands that get truncated)
+show_preview = true
+max_preview_height = 10
+
+# Return original shell up-arrow behavior when pressing up
+exit_mode = "return-original"
+
+# Reverse the search results (most recent first)
+invert = false
+
+# Number of search results to show
+results_per_page = 20
+
+## Sync (disabled by default — enable if you want cross-machine sync)
+#auto_sync = true
+#sync_address = "https://api.atuin.sh"
+#sync_frequency = "10m"
+
+## History
+# Ignore commands that start with a space
+secrets_filter = true
+
+# What to store
+store_failed = true
+
+# History filter — ignore short/useless commands
+history_filter = [
+  "^cd$",
+  "^ls$",
+  "^ll$",
+  "^exit$",
+  "^clear$",
+  "^pwd$",
+]
+
+[preview]
+strategy = "auto"
