@@ -1,0 +1,49 @@
+# Font
+font-family = JetBrainsMono Nerd Font
+font-size = 10
+adjust-cell-height = 15%
+
+# Color scheme (Catppuccin Mocha)
+theme = Catppuccin Mocha
+
+# Window appearance
+background-opacity = 0.88
+background-blur = 20
+window-padding-x = 4
+window-padding-y = 4
+window-decoration = auto
+
+# macOS: Option key as Alt for Neovim Meta keybindings
+macos-option-as-alt = left
+
+# Terminal
+term = xterm-256color
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Scrollback
+scrollback-limit = 50000
+
+# Clipboard
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = false
+
+# Misc
+confirm-close-surface = false
+shell-integration = detect
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+
+# Window behavior
+window-inherit-working-directory = true
+window-save-state = always
+
+# Unfocused split dimming (if using Ghostty splits)
+unfocused-split-opacity = 0.85
+
+# URL detection
+link-url = true
