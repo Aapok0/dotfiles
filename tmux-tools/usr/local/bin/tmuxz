@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+# Check dependencies
+for cmd in tmux zoxide; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: '$cmd' is not installed." >&2
+    exit 1
+  fi
+done
 
 # Exit with message, if no variable is given
 if [ -z "$1" ]; then

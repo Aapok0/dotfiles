@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+# Check dependencies
+for cmd in tmux zoxide fzf; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: '$cmd' is not installed." >&2
+    exit 1
+  fi
+done
 
 # Query directory path with interactive fzf, save directory name and check if session with that name exists
-zoxide_fzf_result_path="$( zoxide query -i )"
+zoxide_fzf_result_path="$( zoxide query -i )" || exit 0
 zoxide_fzf_result="$(echo "${zoxide_fzf_result_path}" | awk -F / '{print $NF}' )"
 session_exists="$( tmux ls -F \#S | grep -x "${zoxide_fzf_result}" )"
 
