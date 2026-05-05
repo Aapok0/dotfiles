@@ -99,3 +99,35 @@ yazi
 
 - A **Nerd Font** for icons
 - [fd](https://github.com/sharkdp/fd), [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [zoxide](https://github.com/ajeetdsouza/zoxide) — for search/jump features
+
+```bash
+# macOS (included in Brewfile)
+brew install fd ripgrep fzf zoxide
+
+# Arch
+sudo pacman -S fd ripgrep fzf zoxide
+
+# Fedora
+sudo dnf install fd-find ripgrep fzf zoxide
+
+# Debian/Ubuntu
+sudo apt install fd-find ripgrep fzf zoxide
+```
+
+### Optional (image preview & archive support)
+
+These enable image thumbnails, PDF preview, video thumbnails, and archive extraction:
+
+```bash
+# macOS (included in Brewfile)
+brew install ffmpeg sevenzip jq poppler
+
+# Arch
+sudo pacman -S ffmpeg p7zip jq poppler
+
+# Fedora
+sudo dnf install ffmpeg-free p7zip jq poppler-utils
+
+# Debian/Ubuntu
+sudo apt install ffmpeg p7zip-full jq poppler-utils
+```
