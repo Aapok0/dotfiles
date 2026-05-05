@@ -1,0 +1,52 @@
+# Lazygit configuration
+# Catppuccin Mocha theme with sensible defaults
+
+gui:
+  # Use your terminal's theme colors
+  nerdFontsVersion: "3"
+  showIcons: true
+  showBranchCommitHash: true
+  showDivergenceFromBaseBranch: onlyArrow
+  showBottomLine: false
+  showCommandLog: false
+  border: rounded
+  animateExplosion: false
+  theme:
+    activeBorderColor:
+      - "#a6e3a1" # green
+      - bold
+    inactiveBorderColor:
+      - "#585b70" # surface2
+    searchingActiveBorderColor:
+      - "#f9e2af" # yellow
+      - bold
+    optionsTextColor:
+      - "#89b4fa" # blue
+    selectedLineBgColor:
+      - "#313244" # surface0
+    cherryPickedCommitBgColor:
+      - "#45475a" # surface1
+    cherryPickedCommitFgColor:
+      - "#f5c2e7" # pink
+    markedBaseCommitBgColor:
+      - "#f9e2af" # yellow
+    markedBaseCommitFgColor:
+      - "#11111b" # crust
+    unstagedChangesColor:
+      - "#f38ba8" # red
+    defaultFgColor:
+      - "#cdd6f4" # text
+git:
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
+  autoFetch: true
+  autoRefresh: true
+  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --"
+  overrideGpg: false
+os:
+  editPreset: "nvim"
+keybinding:
+  universal:
+    quit: "q"
+    quit-alt1: "<c-c>"
