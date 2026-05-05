@@ -2,164 +2,222 @@
 
 Configuration files for CLI tools and development environments on Linux and macOS, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
-## Setup
+## Quick Start
 
-### 1. Install stow
-
-```bash
-# Debian
-sudo apt install stow
-
-# Arch
-sudo pacman -S stow
-
-# Fedora
-sudo dnf install stow
-
-# macOS
-brew install stow
-```
-
-### 2. Symlink configurations (from the dotfiles directory)
+### Full install (recommended)
 
 ```bash
-# Selected configurations
-stow -vRt $HOME <directory-name>
+# Install prerequisites
+# macOS:
+brew install stow just
+# Arch:
+sudo pacman -S stow just
+# Fedora:
+sudo dnf install stow just
+# Debian/Ubuntu:
+sudo apt-get install stow just
 
-# All configurations
-stow -vRt $HOME */
+mkdir $HOME/Workspace
+git clone <repo-url> $HOME/Workspace/dotfiles
+cd $HOME/Workspace/dotfiles
+
+# One command: installs packages, stows configs, clones plugins, sets up themes
+just install
 ```
 
-### 3. Remove configurations
+This auto-detects your OS and runs the appropriate package manager, then stows all configs, clones ZSH plugins and TPM, installs the yazi theme, and imports shell history into atuin.
+
+### Manual / step-by-step
 
 ```bash
-# Selected configurations
-stow -vDt $HOME <directory-name>
-
-# All configurations
-stow -vDt $HOME */
+just brew-install          # or apt-install / pacman-install / dnf-install
+just stow-all              # symlink all configs
+just zsh-plugins           # clone ZSH plugins
+just tpm-install           # clone tmux plugin manager
+just set-shell             # change default shell to zsh
+just yazi-theme            # install yazi Catppuccin theme
+just atuin-import          # import shell history into atuin
+just check                 # verify core tools are installed
 ```
+
+After install, open tmux and press `prefix + I` to install tmux plugins, then `exec zsh` to reload your shell.
+
+### Stow individual configs
+
+```bash
+just stow nvim
+just stow zsh
+just terminal=kitty stow-all   # override default terminal
+```
+
+## Task Runner
+
+A [justfile](justfile) automates common operations:
+
+| Command | Description |
+|---|---|
+| `just install` | **Full setup** — packages, stow, plugins, themes (auto-detects OS) |
+| `just stow-all` | Stow all configs (uses default terminal) |
+| `just unstow-all` | Remove all symlinks |
+| `just restow-all` | Re-stow all (after adding new files) |
+| `just stow <name>` | Stow a single config |
+| `just unstow <name>` | Unstow a single config |
+| `just brew-install` | Install macOS deps via Brewfile |
+| `just apt-install` | Install core deps (Debian/Ubuntu) |
+| `just pacman-install` | Install core deps (Arch) |
+| `just dnf-install` | Install core deps (Fedora) |
+| `just zsh-plugins` | Clone ZSH plugins (skips existing) |
+| `just tpm-install` | Clone TPM for tmux (skips if exists) |
+| `just set-shell` | Set default shell to zsh (no-op if already zsh) |
+| `just yazi-theme` | Install yazi Catppuccin theme |
+| `just atuin-import` | Import shell history into atuin |
+| `just check` | Verify all core tools are installed |
+
+Override the default terminal emulator with `just terminal=ghostty <command>`.
 
 ## Configurations
 
-More details can be found in the README of each subdirectory.
+### Shell & Prompt
 
-### bat
+| Config | Description |
+|---|---|
+| [zsh](zsh/) | Cross-platform ZSH config with OS detection, fzf, atuin history, zoxide, completions, SSH key auto-loading |
+| [starship](starship/) | Custom "Dusk" prompt theme — muted pastel powerline with Catppuccin-inspired palette |
 
-A `cat` replacement with syntax highlighting. Uses the Catppuccin Mocha theme.
+### Terminal Emulators
 
-### gitconfig
+One terminal is stowed by default (configurable via `just terminal=<name>`).
 
-Git configuration with sensible defaults, extensive aliases, and delta integration for syntax-highlighted diffs.
+| Config | Description |
+|---|---|
+| [kitty](kitty/) | GPU-accelerated terminal with Catppuccin Mocha colors, powerline tabs, transparency |
+| [wezterm](wezterm/) | Lua-configurable terminal with built-in multiplexing, WebGPU rendering, integrated titlebar |
+| [ghostty](ghostty/) | Native-rendering terminal by Mitchell Hashimoto, minimal config, background blur |
 
-#### Requirements
+All three use **JetBrainsMono Nerd Font** and **Catppuccin Mocha** theme.
 
-- [git-delta](https://github.com/dandavella/delta)
+### Editor
 
-#### Setup
+| Config | Description |
+|---|---|
+| [nvim](nvim/) | Modern Neovim in Lua — Lazy.nvim, Mason, LSP, Treesitter, Copilot, conform + nvim-lint |
+| [vim](vim/) | Legacy Vim config with Vundle (Neovim preferred) |
 
-Create a local config for your credentials at `~/.config/git/config.local`.
+### Git
 
-### kitty
+| Config | Description |
+|---|---|
+| [gitconfig](gitconfig/) | Histogram diffs, delta integration, 20+ aliases, auto-upstream, SSH auth |
 
-GPU-accelerated terminal emulator with Catppuccin colors and transparency.
+Requires [git-delta](https://github.com/dandavtella/delta). Create credentials at `~/.config/git/config.local`.
 
-#### Requirements
+### Terminal Multiplexer
 
-Font:
+| Config | Description |
+|---|---|
+| [tmux](tmux/) | Prefix `Ctrl+Space`, vim-aware pane nav, Catppuccin theme, resurrect + continuum |
+| [tmux-tools](tmux-tools/) | `tmuxz` and `tmuxf` — create/attach sessions via zoxide + fzf |
 
-- Meslo Nerd Font (Linux)
-- Fira Code Nerd Font (macOS)
+### TUI Tools
 
-### lightdm
+| Config | Description |
+|---|---|
+| [lazygit](lazygit/) | Git TUI with Catppuccin Mocha theme, delta pager, Nerd Font icons |
+| [yazi](yazi/) | Terminal file manager with Catppuccin Mocha flavor, image preview |
+| [atuin](atuin/) | SQLite-backed shell history — fuzzy search, directory-scoped, replaces fzf Ctrl+R |
 
-Display manager and slick-greeter configuration for the login screen. Linux only.
+### Other
 
-#### Requirements
+| Config | Description |
+|---|---|
+| [bat](bat/) | `cat` replacement with syntax highlighting, Catppuccin Mocha theme |
 
-- lightdm
-- lightdm-slick-greeter
+## Core Tools
 
-### nvim
+These tools are integrated into the ZSH config and expected to be installed:
 
-Neovim configuration in Lua with lazy.nvim plugin manager. Includes LSP support, Telescope fuzzy finder, Treesitter, GitHub Copilot, and more.
+### Essential
 
-#### Requirements
+| Tool | Purpose |
+|---|---|
+| [neovim](https://neovim.io/) | Editor (aliased to `vim`) |
+| [eza](https://github.com/eza-community/eza) | Modern `ls` replacement |
+| [bat](https://github.com/sharkdp/bat) | `cat` with syntax highlighting |
+| [fzf](https://github.com/junegunn/fzf) | Fuzzy finder (files, dirs, completions) |
+| [fd](https://github.com/sharkdp/fd) | Fast `find` replacement |
+| [zoxide](https://github.com/ajeetdsouza/zoxide) | Smart `cd` with frecency |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | Fast recursive grep |
+| [git-delta](https://github.com/dandavtella/delta) | Syntax-highlighted git diffs |
+| [starship](https://starship.rs/) | Cross-shell prompt |
+| [atuin](https://github.com/atuinsh/atuin) | Shell history search |
 
-- ripgrep
-- A [Nerd Font](https://www.nerdfonts.com/)
-- npm (for some LSP servers)
-- python3
+### TUI Applications
 
-#### Setup
+| Tool | Purpose |
+|---|---|
+| [lazygit](https://github.com/jesseduffield/lazygit) | Git TUI client |
+| [lazydocker](https://github.com/jesseduffield/lazydocker) | Docker TUI client |
+| [yazi](https://github.com/sxyazi/yazi) | Terminal file manager |
 
-1. Symlink the config with stow
-2. Open Neovim — plugins auto-install via lazy.nvim
-3. Run `:Mason` to install LSP servers and formatters
+### Additional
 
-### starship
+| Tool | Purpose |
+|---|---|
+| [tmux](https://github.com/tmux/tmux) | Terminal multiplexer |
+| [thefuck](https://github.com/nvbn/thefuck) | Command autocorrection |
+| [tldr](https://github.com/tldr-pages/tldr) | Simplified man pages |
+| [btop](https://github.com/aristocratos/btop) | System monitor |
+| [direnv](https://github.com/direnv/direnv) | Per-directory environment variables |
+| [dust](https://github.com/bootandy/dust) | Disk usage analyzer |
+| [procs](https://github.com/dalance/procs) | Process viewer |
+| [gh](https://cli.github.com/) | GitHub CLI |
+| [just](https://github.com/casey/just) | Task runner |
 
-Cross-shell prompt configuration using a modified Gruvbox preset.
+## macOS Setup
 
-#### Requirements
+A [Brewfile](Brewfile) is included for one-command macOS setup:
 
-- [Starship](https://starship.rs/)
+```bash
+brew bundle --file=Brewfile
+```
 
-### tmux
+This installs all CLI tools, fonts, the default terminal emulator, and linters/formatters.
 
-Terminal multiplexer configuration with TPM plugin manager and vim-tmux-navigator integration.
+## Font
 
-#### Requirements
+All configs use **JetBrainsMono Nerd Font**:
 
-- [TPM](https://github.com/tmux-plugins/tpm) — clone to `~/tmux/plugins/tpm`
+```bash
+# macOS
+brew install --cask font-jetbrains-mono-nerd-font
 
-#### Setup
+# Arch
+sudo pacman -S ttf-jetbrains-mono-nerd
 
-After symlinking, press `prefix + I` inside tmux to install plugins.
+# Fedora
+sudo dnf install jetbrains-mono-fonts-all
+# Nerd Font patched version: https://www.nerdfonts.com/font-downloads
 
-### tmux-tools
+# Debian/Ubuntu
+mkdir -p ~/.local/share/fonts
+# Download from https://www.nerdfonts.com/font-downloads
+unzip JetBrainsMono.zip -d ~/.local/share/fonts/
+fc-cache -fv
+```
 
-Two utility scripts for creating/attaching tmux sessions using directory names:
+## Machine-Specific Config
 
-- `tmuxz` — create/attach a session by zoxide keyword
-- `tmuxf` — fuzzy-find a zoxide directory with fzf and create/attach a session
+Use `~/.config/zsh/.zshrc.local` for settings specific to one machine (not tracked):
 
-#### Requirements
+```zsh
+export MY_API_KEY="secret"
+alias work='cd ~/projects/work'
+```
 
-- tmux
-- zoxide
-- fzf
+Use `~/.config/git/config.local` for git credentials (not tracked):
 
-### vim
-
-Legacy Vim configuration with Vundle. Neovim is preferred — see `nvim` above.
-
-#### Requirements
-
-- A [Nerd Font](https://www.nerdfonts.com/) (for NERDTree icons)
-
-### zsh
-
-Cross-platform ZSH configuration with automatic OS/distro detection, completion caching, SSH key auto-loading, and PATH deduplication. Uses Starship for the prompt.
-
-#### Requirements
-
-Plugins (clone to `~/.config/zsh/plugins/`):
-
-- [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting)
-- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
-- [zsh-completions](https://github.com/zsh-users/zsh-completions)
-- [fzf-git.sh](https://github.com/junegunn/fzf-git.sh)
-
-Tools:
-
-- eza
-- bat
-- fzf
-- zoxide
-- fd
-- starship
-
-#### Setup
-
-Use `~/.zshrc.local` for machine-specific settings (not tracked by git).
+```ini
+[user]
+    name = Your Name
+    email = your@email.com
+```

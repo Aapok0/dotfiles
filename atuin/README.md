@@ -51,6 +51,10 @@ rm -rf ~/.config/atuin && stow atuin
 ### Import Existing History
 
 ```bash
+# Recommended
+just atuin-import
+
+# Or manually
 atuin import auto
 ```
 

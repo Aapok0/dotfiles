@@ -7,6 +7,10 @@ Configuration and plugins for tmux, managed with [TPM](https://github.com/tmux-p
 ### 1. Install TPM
 
 ```bash
+# Recommended
+just tpm-install
+
+# Or clone manually
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 ```
 

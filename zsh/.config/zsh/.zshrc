@@ -15,7 +15,7 @@ fi
 # Keep 10000 lines of history within the shell and save it to ~/.config/zsh/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
-HISTFILE=~/.config/zsh/.zsh_history
+export HISTFILE="$HOME/.config/zsh/.zsh_history"
 
 # History won't save duplicates or lines starting with space
 # Search won't show duplicates and history is shared between terminals
@@ -148,6 +148,13 @@ alias egrep='egrep --color=auto'
 
 # fzf - fuzzy finder
 eval "$(fzf --zsh)"
+bindkey -r '^R'  # unbind fzf's Ctrl+R so atuin can use it
+
+# atuin - shell history (replaces fzf Ctrl+R with SQLite-backed search)
+# Ctrl+R opens atuin search, Up arrow keeps normal shell behavior
+if (( $+commands[atuin] )); then
+    eval "$(atuin init zsh --disable-up-arrow)"
+fi
 
 # FZF theme - Catppuccin Mocha
 export FZF_DEFAULT_OPTS=" \
