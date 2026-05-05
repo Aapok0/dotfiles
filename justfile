@@ -63,27 +63,98 @@ brew-check:
 # ──── Linux Setup ─────────────────────────────────────────
 
 # Install core dependencies
-# Debian/Ubuntu
+# Debian (packages not in default repos are installed via alternative methods)
 apt-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
     sudo apt-get update
     sudo apt-get install -y \
-        neovim tmux zsh git ripgrep fzf fd-find bat \
-        stow curl build-essential nodejs npm python3 \
-        xclip shellcheck
+        neovim tmux zsh git stow curl \
+        build-essential cmake nodejs npm python3 \
+        ripgrep fzf fd-find bat \
+        direnv thefuck tldr shellcheck \
+        btop entr xclip jq
 
-# Arch
+    if ! command -v eza &>/dev/null; then
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        sudo apt-get update && sudo apt-get install -y eza
+    fi
+
+    if ! command -v delta &>/dev/null; then
+        echo "Install git-delta: https://github.com/dandavtella/delta/releases"
+    fi
+
+    if ! command -v zoxide &>/dev/null; then
+        curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+    fi
+
+    if ! command -v starship &>/dev/null; then
+        curl -sS https://starship.rs/install.sh | sh -s -- -y
+    fi
+
+    if ! command -v atuin &>/dev/null; then
+        bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
+    fi
+
+    if ! command -v lazygit &>/dev/null; then
+        LAZYGIT_VERSION=$$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+        curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_$${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
+        sudo install /tmp/lazygit /usr/local/bin && rm /tmp/lazygit /tmp/lazygit.tar.gz
+    fi
+
+    if ! command -v yazi &>/dev/null; then
+        cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires cargo)"
+    fi
+
+    if ! command -v gh &>/dev/null; then
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+        echo "deb [arch=$$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+        sudo apt-get update && sudo apt-get install -y gh
+    fi
+
+    if ! command -v dust &>/dev/null; then
+        cargo install du-dust 2>/dev/null || echo "Install dust: cargo install du-dust (requires cargo)"
+    fi
+    if ! command -v procs &>/dev/null; then
+        cargo install procs 2>/dev/null || echo "Install procs: cargo install procs (requires cargo)"
+    fi
+
+# Arch (all packages available in official repos)
 pacman-install:
     sudo pacman -S --needed \
-        neovim tmux zsh git ripgrep fzf fd bat \
-        stow curl base-devel nodejs npm python \
-        xclip shellcheck eza zoxide starship dust procs
+        neovim tmux zsh git git-delta stow curl \
+        base-devel cmake nodejs npm python \
+        ripgrep fzf fd bat eza zoxide starship dust procs \
+        atuin direnv thefuck tldr shellcheck \
+        lazygit yazi btop entr xclip jq github-cli
 
 # Fedora
 dnf-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
     sudo dnf install -y \
-        neovim tmux zsh git ripgrep fzf fd-find bat \
-        stow curl gcc make nodejs npm python3 \
-        xclip ShellCheck
+        neovim tmux zsh git git-delta stow curl \
+        gcc make cmake nodejs npm python3 \
+        ripgrep fzf fd-find bat eza zoxide starship dust procs \
+        direnv thefuck tldr ShellCheck \
+        btop entr xclip jq gh
+
+    if ! command -v atuin &>/dev/null; then
+        bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
+    fi
+
+    if ! command -v lazygit &>/dev/null; then
+        sudo dnf copr enable atim/lazygit -y
+        sudo dnf install -y lazygit
+    fi
+
+    if ! command -v yazi &>/dev/null; then
+        cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires cargo)"
+    fi
 
 # ──── Utilities ───────────────────────────────────────────
 
@@ -156,7 +227,7 @@ set-shell:
 check:
     #!/usr/bin/env bash
     missing=()
-    for cmd in nvim tmux zsh git stow starship zoxide fzf fd rg bat eza delta; do
+    for cmd in nvim tmux zsh git stow starship zoxide fzf fd rg bat eza delta atuin lazygit yazi; do
         if ! command -v "$$cmd" &>/dev/null; then
             missing+=("$$cmd")
         fi
@@ -240,5 +311,9 @@ install:
     echo ""
     echo "=== Done ==="
     echo "Next steps:"
-    echo "  • Open tmux and press prefix + I to install tmux plugins"
+    echo "  • If on Debian, install git-delta manually:"
+    echo "    1. Download latest release from https://github.com/dandavison/delta/releases"
+    echo "    2. Install the downloaded package"
     echo "  • Log out and back in (or run 'exec zsh') to use zsh"
+    echo "  • Open nvim and let lazy.nvim install plugins"
+    echo "  • Open tmux and press prefix + I to install tmux plugins"

@@ -1,6 +1,6 @@
 # ZSH Configuration
 
-Cross-platform ZSH configuration supporting **Debian**, **Ubuntu**, **Arch**, **Fedora**, and **macOS**.
+Cross-platform ZSH configuration supporting **Debian**, **Arch**, **Fedora**, and **macOS**.
 
 The configuration automatically detects your OS and distro, then loads platform-specific tools and exports accordingly. All ZSH dotfiles and plugins live in `~/.config/zsh/` (configured via `$ZDOTDIR` in `.zshenv`).
 
@@ -99,7 +99,7 @@ These tools are integrated into the zsh config and expected to be installed. On 
 The configuration automatically detects your NVM installation:
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt install nvm
 
 # Arch / Fedora

@@ -48,7 +48,7 @@ Second line: prompt character (changes color on error, adapts to vim modes).
 |----------|---------|
 | macOS | `brew install --cask font-jetbrains-mono-nerd-font` |
 | Arch | `sudo pacman -S ttf-jetbrains-mono-nerd` |
-| Debian/Ubuntu | Download from [nerdfonts.com](https://www.nerdfonts.com/font-downloads) |
+| Debian | Download from [nerdfonts.com](https://www.nerdfonts.com/font-downloads) |
 
 Set your terminal font to **"JetBrainsMono Nerd Font"** — see the [kitty README](../kitty/README.md#font) for terminal-specific font setup.
 

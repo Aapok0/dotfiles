@@ -25,7 +25,7 @@ sudo pacman -S yazi
 # Fedora
 sudo dnf install yazi
 
-# Debian/Ubuntu
+# Debian
 cargo install --locked yazi-fm yazi-cli
 ```
 
@@ -110,7 +110,7 @@ sudo pacman -S fd ripgrep fzf zoxide
 # Fedora
 sudo dnf install fd-find ripgrep fzf zoxide
 
-# Debian/Ubuntu
+# Debian
 sudo apt install fd-find ripgrep fzf zoxide
 ```
 
@@ -128,6 +128,6 @@ sudo pacman -S ffmpeg p7zip jq poppler
 # Fedora
 sudo dnf install ffmpeg-free p7zip jq poppler-utils
 
-# Debian/Ubuntu
+# Debian
 sudo apt install ffmpeg p7zip-full jq poppler-utils
 ```

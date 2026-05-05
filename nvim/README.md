@@ -29,7 +29,7 @@ sudo pacman -S shfmt stylua prettier python-ruff hadolint tflint ansible-lint sh
 sudo dnf install ShellCheck
 # Most others available via pip, npm, or Mason
 
-# Debian/Ubuntu
+# Debian
 sudo apt-get install shellcheck
 # Most others available via pip, npm, or Mason
 ```
@@ -227,7 +227,7 @@ All mappings below use `<Space>` as `<leader>`. Neovim 0.11+ also provides defau
 Neovim auto-detects the clipboard provider. On macOS, `pbcopy`/`pbpaste` are used natively.
 
 ```bash
-# X11 (Debian/Ubuntu)
+# X11 (Debian)
 sudo apt-get install xclip
 
 # X11 (Fedora)
@@ -236,7 +236,7 @@ sudo dnf install xclip
 # X11 (Arch)
 sudo pacman -S xclip
 
-# Wayland (Debian/Ubuntu)
+# Wayland (Debian)
 sudo apt-get install wl-clipboard
 
 # Wayland (Fedora)
@@ -249,7 +249,7 @@ sudo pacman -S wl-clipboard
 ### Ripgrep (required for Telescope live grep)
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt-get install ripgrep
 
 # Fedora
@@ -265,7 +265,7 @@ brew install ripgrep
 ### Node.js (required for some LSP servers)
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt-get install nodejs npm
 
 # Fedora
@@ -281,7 +281,7 @@ brew install node
 ### Python (required for some LSP servers)
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt-get install python3
 
 # Fedora
@@ -299,7 +299,7 @@ brew install python3
 Most systems have this installed by default (`gcc` or `clang`).
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt-get install build-essential
 
 # Fedora
@@ -320,7 +320,7 @@ Neovim **0.10+** is required. Version **0.11+** is recommended for native LSP ke
 # Check version
 nvim --version
 
-# Debian/Ubuntu (latest stable via PPA)
+# Debian (latest stable via PPA)
 sudo add-apt-repository ppa:neovim-ppa/stable
 sudo apt-get update && sudo apt-get install neovim
 

@@ -30,7 +30,7 @@ A syntax-highlighting pager for Git diffs. Install based on your system:
 sudo pacman -S git-delta
 ```
 
-**Debian/Ubuntu**
+**Debian**
 ```bash
 # Download the latest release from https://github.com/dandavison/delta/releases
 dpkg -i git-delta_*.deb

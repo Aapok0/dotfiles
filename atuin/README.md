@@ -31,7 +31,7 @@ sudo pacman -S atuin
 # Fedora (COPR)
 sudo dnf install atuin
 
-# Debian/Ubuntu
+# Debian
 bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
 ```
 

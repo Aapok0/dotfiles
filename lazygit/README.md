@@ -26,7 +26,7 @@ sudo pacman -S lazygit
 # Fedora (COPR)
 sudo dnf copr enable atim/lazygit -y && sudo dnf install lazygit
 
-# Debian/Ubuntu
+# Debian
 go install github.com/jesseduffield/lazygit@latest
 ```
 

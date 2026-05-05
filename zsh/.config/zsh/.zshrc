@@ -232,7 +232,7 @@ esac
 
 case "$DISTRO" in
     Debian|Ubuntu)
-        # NVM - Node Version Manager (Debian/Ubuntu package)
+        # NVM - Node Version Manager (Debian package)
         [[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
         ;;
     Arch|Fedora)

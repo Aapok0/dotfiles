@@ -14,7 +14,7 @@ brew install stow just
 sudo pacman -S stow just
 # Fedora:
 sudo dnf install stow just
-# Debian/Ubuntu:
+# Debian:
 sudo apt-get install stow just
 
 mkdir $HOME/Workspace
@@ -63,7 +63,7 @@ A [justfile](justfile) automates common operations:
 | `just stow <name>` | Stow a single config |
 | `just unstow <name>` | Unstow a single config |
 | `just brew-install` | Install macOS deps via Brewfile |
-| `just apt-install` | Install core deps (Debian/Ubuntu) |
+| `just apt-install` | Install core deps (Debian) |
 | `just pacman-install` | Install core deps (Arch) |
 | `just dnf-install` | Install core deps (Fedora) |
 | `just zsh-plugins` | Clone ZSH plugins (skips existing) |
@@ -198,7 +198,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd
 sudo dnf install jetbrains-mono-fonts-all
 # Nerd Font patched version: https://www.nerdfonts.com/font-downloads
 
-# Debian/Ubuntu
+# Debian
 mkdir -p ~/.local/share/fonts
 # Download from https://www.nerdfonts.com/font-downloads
 unzip JetBrainsMono.zip -d ~/.local/share/fonts/

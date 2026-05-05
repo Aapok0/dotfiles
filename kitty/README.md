@@ -12,7 +12,7 @@ Terminal emulator configuration for [Kitty](https://sw.kovidgoyal.net/kitty/).
 ### Install Kitty
 
 ```bash
-# Debian/Ubuntu
+# Debian
 sudo apt-get install kitty
 
 # Fedora
