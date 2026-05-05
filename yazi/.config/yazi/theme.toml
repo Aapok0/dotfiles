@@ -1,0 +1,6 @@
+# Yazi theme — Catppuccin Mocha
+# Install via: ya pkg add yazi-rs/flavors:catppuccin-mocha
+# Then this file activates it
+
+[flavor]
+use = "catppuccin-mocha"
