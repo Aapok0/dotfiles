@@ -77,7 +77,6 @@ brew "imagemagick"
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
-cask "font-fira-mono-nerd-font"
 
 # System tools
 brew "btop"       # system monitor

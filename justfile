@@ -204,6 +204,36 @@ tpm-install:
     fi
     echo "  ℹ Open tmux and press prefix + I to install plugins"
 
+# Install JetBrainsMono Nerd Font
+font-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    os="$(uname -s)"
+    if [[ "$$os" == "Darwin" ]]; then
+        echo "  ℹ Font installed via Brewfile (font-jetbrains-mono-nerd-font)"
+    elif [[ "$$os" == "Linux" ]]; then
+        if command -v pacman &>/dev/null; then
+            sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd
+        elif command -v dnf &>/dev/null; then
+            sudo dnf install -y jetbrains-mono-fonts-all
+            echo "  ℹ Install Nerd Font patched version from https://www.nerdfonts.com/font-downloads if needed"
+        elif command -v apt-get &>/dev/null; then
+            mkdir -p "$$HOME/.local/share/fonts"
+            if fc-list | grep -qi "JetBrainsMono.*Nerd"; then
+                echo "  ✓ JetBrainsMono Nerd Font already installed"
+            else
+                echo "  → Downloading JetBrainsMono Nerd Font..."
+                curl -fsSL -o /tmp/JetBrainsMono.tar.xz "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
+                tar xf /tmp/JetBrainsMono.tar.xz -C "$$HOME/.local/share/fonts/"
+                rm /tmp/JetBrainsMono.tar.xz
+                fc-cache -fv
+                echo "  ✓ JetBrainsMono Nerd Font installed"
+            fi
+        else
+            echo "  ⚠ No supported package manager found, install JetBrainsMono Nerd Font manually"
+        fi
+    fi
+
 # Import shell history into atuin
 atuin-import:
     atuin import auto
@@ -278,6 +308,10 @@ install:
         echo "Unsupported OS: $$os"
         exit 1
     fi
+    echo ""
+
+    echo "── Font ──"
+    just font-install
     echo ""
 
     echo "── Stowing configs ──"

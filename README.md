@@ -30,7 +30,8 @@ This auto-detects your OS and runs the appropriate package manager, then stows a
 ### Manual / step-by-step
 
 ```bash
-just brew-install          # or apt-install / pacman-install / dnf-install
+just pacman-install        # or apt-install / dnf-install / brew-install
+just font-install
 just stow-all              # symlink all configs
 just zsh-plugins           # clone ZSH plugins
 just tpm-install           # clone tmux plugin manager
@@ -62,6 +63,7 @@ A [justfile](justfile) automates common operations:
 | `just restow-all` | Re-stow all (after adding new files) |
 | `just stow <name>` | Stow a single config |
 | `just unstow <name>` | Unstow a single config |
+| `just font-install` | Install JetBrainsMono Nerd Font (auto-detects OS) |
 | `just brew-install` | Install macOS deps via Brewfile |
 | `just apt-install` | Install core deps (Debian) |
 | `just pacman-install` | Install core deps (Arch) |
@@ -185,25 +187,12 @@ This installs all CLI tools, fonts, the default terminal emulator, and linters/f
 
 ## Font
 
-All configs use **JetBrainsMono Nerd Font**:
+All configs use **JetBrainsMono Nerd Font**, installed automatically by `just install` (or `just font-install`):
 
-```bash
-# macOS
-brew install --cask font-jetbrains-mono-nerd-font
-
-# Arch
-sudo pacman -S ttf-jetbrains-mono-nerd
-
-# Fedora
-sudo dnf install jetbrains-mono-fonts-all
-# Nerd Font patched version: https://www.nerdfonts.com/font-downloads
-
-# Debian
-mkdir -p ~/.local/share/fonts
-# Download from https://www.nerdfonts.com/font-downloads
-unzip JetBrainsMono.zip -d ~/.local/share/fonts/
-fc-cache -fv
-```
+- **macOS:** via Brewfile (`font-jetbrains-mono-nerd-font`)
+- **Arch:** `ttf-jetbrains-mono-nerd` (pacman)
+- **Fedora:** `jetbrains-mono-fonts-all` (dnf) + Nerd Font patch from [nerdfonts.com](https://www.nerdfonts.com/font-downloads)
+- **Debian:** downloaded from [nerd-fonts releases](https://github.com/ryanoasis/nerd-fonts/releases)
 
 ## Machine-Specific Config
 
