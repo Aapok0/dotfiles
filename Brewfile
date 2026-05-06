@@ -18,6 +18,8 @@ brew "starship"
 brew "git"
 brew "git-delta"
 brew "gh"
+brew "stow"       # dotfiles management
+brew "curl"       # data transfer tool
 
 # Modern CLI replacements
 brew "eza"        # ls replacement
@@ -32,7 +34,7 @@ brew "procs"      # ps replacement
 # TUI tools
 brew "lazygit"
 brew "lazydocker"
-brew "yazi"       # file manager (optional dependencies: brew install ffmpeg sevenzip jq poppler)
+brew "yazi"       # file manager
 
 # Shell enhancements
 brew "atuin"      # shell history
@@ -40,33 +42,38 @@ brew "direnv"     # per-directory env vars
 brew "thefuck"    # command correction
 brew "tldr"       # simplified man pages
 
-# DevOps / Cloud
+# Task runner
+brew "just"
+
+# DevOps & Cloud
 brew "terraform"
 brew "ansible"
 brew "kubectl"
 brew "helm"
-brew "just"       # task runner
 
-# Linters & formatters (also installable via Mason in Neovim)
-brew "shfmt"
-brew "stylua"
-brew "prettier"
-brew "ruff"
-brew "shellcheck"
-brew "hadolint"
-brew "tflint"
-brew "ansible-lint"
+# Linters & formatters
+# Note: These are also available via :MasonInstall in Neovim for IDE integration
+# Install system-wide for command-line usage:
+#brew "shellcheck"
+#brew "shfmt"
+#brew "stylua"
+#brew "prettier"
+#brew "ruff"
+#brew "hadolint"
+#brew "tflint"
+#brew "ansible-lint"
 
 # Build dependencies
 brew "node"
 brew "python3"
 brew "cmake"      # for telescope-fzf-native
 
-# Yazi optional dependencies (image preview, archive support)
+# Utilities (yazi image preview, archive support, JSON processing)
 brew "ffmpeg"
 brew "sevenzip"
-brew "jq"
+brew "jq"         # JSON processor
 brew "poppler"
+brew "imagemagick"
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"

@@ -72,8 +72,10 @@ apt-install:
         neovim tmux zsh git stow curl \
         build-essential cmake nodejs npm python3 \
         ripgrep fzf fd-find bat \
-        direnv thefuck tldr shellcheck \
-        btop entr xclip jq
+        direnv thefuck tldr \
+        btop entr xclip wl-clipboard jq \
+        ffmpeg p7zip-full poppler-utils imagemagick \
+        terraform ansible kubectl helm
 
     if ! command -v eza &>/dev/null; then
         sudo mkdir -p /etc/apt/keyrings
@@ -129,8 +131,10 @@ pacman-install:
         neovim tmux zsh git git-delta stow curl \
         base-devel cmake nodejs npm python \
         ripgrep fzf fd bat eza zoxide starship dust procs \
-        atuin direnv thefuck tldr shellcheck \
-        lazygit yazi btop entr xclip jq github-cli
+        atuin direnv thefuck tldr \
+        lazygit yazi btop entr xclip wl-clipboard jq github-cli \
+        ffmpeg p7zip poppler imagemagick \
+        terraform ansible kubectl helm
 
 # Fedora
 dnf-install:
@@ -140,8 +144,10 @@ dnf-install:
         neovim tmux zsh git git-delta stow curl \
         gcc make cmake nodejs npm python3 \
         ripgrep fzf fd-find bat eza zoxide starship dust procs \
-        direnv thefuck tldr ShellCheck \
-        btop entr xclip jq gh
+        direnv thefuck tldr \
+        btop entr xclip wl-clipboard jq gh \
+        ffmpeg-free sevenzip poppler-utils ImageMagick \
+        terraform ansible kubectl helm
 
     if ! command -v atuin &>/dev/null; then
         bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
@@ -315,5 +321,8 @@ install:
     echo "    1. Download latest release from https://github.com/dandavison/delta/releases"
     echo "    2. Install the downloaded package"
     echo "  • Log out and back in (or run 'exec zsh') to use zsh"
-    echo "  • Open nvim and let lazy.nvim install plugins"
-    echo "  • Open tmux and press prefix + I to install tmux plugins"
+    echo "  • Open nvim and install plugins:"
+    echo "    1. nvim"
+    echo "    2. Let lazy.nvim install plugins"
+    echo "    3. :MasonInstall shellcheck shfmt stylua prettier ruff hadolint tflint ansible-lint"
+    echo "  • Open tmux (tmux) and press prefix + I to install tmux plugins"
