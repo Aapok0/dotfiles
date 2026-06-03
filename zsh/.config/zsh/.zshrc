@@ -9,6 +9,25 @@ else
     DISTRO="darwin"
 fi
 
+
+################################################################################
+# PATH BOOTSTRAP
+################################################################################
+# Must run BEFORE the prompt, completions, and command-line tools below, since
+# those binaries (starship, fzf, zoxide, thefuck, coreutils...) live in dirs
+# that aren't on the default macOS PATH until brew shellenv adds them.
+
+case "$DISTRO" in
+    darwin)
+        # macOS Homebrew - puts /opt/homebrew/bin on PATH
+        [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
+        # GNU Coreutils for dircolors compatibility (used in COMPLETIONS below)
+        [[ -d /opt/homebrew/opt/coreutils/libexec/gnubin ]] && \
+            export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+        ;;
+esac
+
 ################################################################################
 # HISTORY CONFIG
 ################################################################################
@@ -246,18 +265,13 @@ case "$DISTRO" in
         fi
         ;;
     darwin)
-        # macOS Homebrew
-        [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-        
-        # GNU Coreutils for dircolors compatibility
-        [[ -d /opt/homebrew/opt/coreutils/libexec/gnubin ]] && \
-            export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-        
+        # macOS Homebrew + GNU coreutils are set up early in PATH BOOTSTRAP
+
         # Java (macOS specific)
         [[ -x /usr/libexec/java_home ]] && \
             export JAVA_HOME=$(/usr/libexec/java_home) && \
             export PATH="$JAVA_HOME/bin:$PATH"
-        
+
         # NVM - Node Version Manager (macOS)
         [[ -s "$HOME/.config/nvm/nvm.sh" ]] && \
             export NVM_DIR="$HOME/.config/nvm" && \
