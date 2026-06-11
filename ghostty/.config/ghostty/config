@@ -21,6 +21,7 @@ term = xterm-256color
 
 # Mouse
 mouse-hide-while-typing = true
+mouse-scroll-multiplier = discrete:0.4
 
 # Scrollback
 scrollback-limit = 50000
