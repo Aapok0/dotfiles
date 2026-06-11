@@ -160,6 +160,17 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+# Distro-specific command aliases (package names differ from upstream binaries)
+case "$DISTRO" in
+    Debian|Ubuntu)
+        (( $+commands[fdfind] )) && alias fd='fdfind'
+        ;;
+    Fedora)
+        (( $+commands[fdfind] )) && alias fd='fdfind'
+        (( $+commands[ripgrep] && ! $+commands[rg] )) && alias rg='ripgrep'
+        ;;
+esac
+
 
 ################################################################################
 # COMMAND LINE TOOLS

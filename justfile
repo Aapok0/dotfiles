@@ -18,9 +18,9 @@ core_dirs := "bat gitconfig nvim starship tmux tmux-tools vim zsh lazygit yazi a
 stow-all:
     @echo "Stowing all configs (terminal: {{terminal}})..."
     @for dir in {{terminal}} {{core_dirs}}; do \
-        if [ -d "$$dir" ]; then \
-            echo "  → $$dir"; \
-            stow -v --target="$$HOME" "$$dir" 2>&1 | grep -v "^$"; \
+        if [ -d "$dir" ]; then \
+            echo "  → $dir"; \
+            stow -v --target="$HOME" "$dir" 2>&1 | grep -v "^$" || true; \
         fi; \
     done
     @echo "Done."
@@ -28,9 +28,9 @@ stow-all:
 unstow-all:
     @echo "Unstowing all configs (terminal: {{terminal}})..."
     @for dir in {{terminal}} {{core_dirs}}; do \
-        if [ -d "$$dir" ]; then \
-            echo "  → $$dir"; \
-            stow -v -D --target="$$HOME" "$$dir" 2>&1 | grep -v "^$"; \
+        if [ -d "$dir" ]; then \
+            echo "  → $dir"; \
+            stow -v -D --target="$HOME" "$dir" 2>&1 | grep -v "^$" || true; \
         fi; \
     done
     @echo "Done."
@@ -38,9 +38,9 @@ unstow-all:
 restow-all:
     @echo "Restowing all configs (terminal: {{terminal}})..."
     @for dir in {{terminal}} {{core_dirs}}; do \
-        if [ -d "$$dir" ]; then \
-            echo "  → $$dir"; \
-            stow -v -R --target="$$HOME" "$$dir" 2>&1 | grep -v "^$"; \
+        if [ -d "$dir" ]; then \
+            echo "  → $dir"; \
+            stow -v -R --target="$HOME" "$dir" 2>&1 | grep -v "^$" || true; \
         fi; \
     done
     @echo "Done."
@@ -69,7 +69,7 @@ apt-install:
     set -euo pipefail
     sudo apt-get update
     sudo apt-get install -y \
-        neovim tmux zsh git stow curl \
+        neovim tmux zsh git stow curl cargo \
         build-essential cmake nodejs npm python3 \
         ripgrep fzf fd-find bat \
         direnv thefuck tldr \
@@ -78,14 +78,29 @@ apt-install:
         terraform ansible kubectl helm
 
     if ! command -v eza &>/dev/null; then
-        sudo mkdir -p /etc/apt/keyrings
-        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        if [[ ! -f /etc/apt/sources.list.d/gierens.list ]]; then
+            sudo mkdir -p /etc/apt/keyrings
+            wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+            echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        fi
         sudo apt-get update && sudo apt-get install -y eza
     fi
 
     if ! command -v delta &>/dev/null; then
-        echo "Install git-delta: https://github.com/dandavtella/delta/releases"
+        arch="$(dpkg --print-architecture)"
+        case "$arch" in
+            amd64) delta_arch="amd64" ;;
+            arm64) delta_arch="arm64" ;;
+            *)
+                echo "Unsupported architecture for git-delta: $arch"
+                echo "Install manually: https://github.com/dandavison/delta/releases"
+                exit 1
+                ;;
+        esac
+        DELTA_VERSION=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+        curl -fsSL -o /tmp/git-delta.deb "https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/git-delta_${DELTA_VERSION}_${delta_arch}.deb"
+        sudo dpkg -i /tmp/git-delta.deb || sudo apt-get install -f -y
+        rm -f /tmp/git-delta.deb
     fi
 
     if ! command -v zoxide &>/dev/null; then
@@ -101,8 +116,8 @@ apt-install:
     fi
 
     if ! command -v lazygit &>/dev/null; then
-        LAZYGIT_VERSION=$$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-        curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_$${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+        curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
         tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
         sudo install /tmp/lazygit /usr/local/bin && rm /tmp/lazygit /tmp/lazygit.tar.gz
     fi
@@ -112,9 +127,11 @@ apt-install:
     fi
 
     if ! command -v gh &>/dev/null; then
-        sudo mkdir -p /etc/apt/keyrings
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
-        echo "deb [arch=$$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+        if [[ ! -f /etc/apt/sources.list.d/github-cli.list ]]; then
+            sudo mkdir -p /etc/apt/keyrings
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+        fi
         sudo apt-get update && sudo apt-get install -y gh
     fi
 
@@ -154,7 +171,9 @@ dnf-install:
     fi
 
     if ! command -v lazygit &>/dev/null; then
-        sudo dnf copr enable atim/lazygit -y
+        if ! dnf copr list --enabled 2>/dev/null | grep -q 'atim/lazygit'; then
+            sudo dnf copr enable atim/lazygit -y
+        fi
         sudo dnf install -y lazygit
     fi
 
@@ -170,25 +189,25 @@ zsh-plugins:
     set -euo pipefail
     plugins_dir="$HOME/.config/zsh/plugins"
     tools_dir="$HOME/.config/zsh/tools"
-    mkdir -p "$$plugins_dir" "$$tools_dir"
+    mkdir -p "$plugins_dir" "$tools_dir"
     declare -A plugins=(
         [fast-syntax-highlighting]="https://github.com/zdharma-continuum/fast-syntax-highlighting.git"
         [zsh-autosuggestions]="https://github.com/zsh-users/zsh-autosuggestions.git"
         [zsh-completions]="https://github.com/zsh-users/zsh-completions.git"
     )
-    for name in "$${!plugins[@]}"; do
-        if [[ -d "$$plugins_dir/$$name" ]]; then
-            echo "  ✓ $$name (already cloned)"
+    for name in "${!plugins[@]}"; do
+        if [[ -d "$plugins_dir/$name/.git" ]]; then
+            echo "  ✓ $name (already cloned)"
         else
-            echo "  → cloning $$name"
-            git clone "$${plugins[$$name]}" "$$plugins_dir/$$name"
+            echo "  → cloning $name"
+            git clone "${plugins[$name]}" "$plugins_dir/$name"
         fi
     done
-    if [[ -d "$$tools_dir/fzf-git.sh" ]]; then
+    if [[ -d "$tools_dir/fzf-git.sh/.git" ]]; then
         echo "  ✓ fzf-git.sh (already cloned)"
     else
         echo "  → cloning fzf-git.sh"
-        git clone "https://github.com/junegunn/fzf-git.sh.git" "$$tools_dir/fzf-git.sh"
+        git clone "https://github.com/junegunn/fzf-git.sh.git" "$tools_dir/fzf-git.sh"
     fi
 
 # Clone TPM (tmux plugin manager)
@@ -196,35 +215,43 @@ tpm-install:
     #!/usr/bin/env bash
     set -euo pipefail
     tpm_dir="$HOME/.config/tmux/plugins/tpm"
-    if [[ -d "$$tpm_dir" ]]; then
+    if [[ -d "$tpm_dir/.git" ]]; then
         echo "  ✓ TPM already installed"
     else
         echo "  → cloning TPM"
-        git clone "https://github.com/tmux-plugins/tpm.git" "$$tpm_dir"
+        git clone "https://github.com/tmux-plugins/tpm.git" "$tpm_dir"
     fi
-    echo "  ℹ Open tmux and press prefix + I to install plugins"
+    if [[ -x "$tpm_dir/bin/install_plugins" ]]; then
+        echo "  → installing tmux plugins"
+        "$tpm_dir/bin/install_plugins"
+        echo "  ✓ tmux plugins installed (or already up to date)"
+    fi
 
 # Install JetBrainsMono Nerd Font
 font-install:
     #!/usr/bin/env bash
     set -euo pipefail
     os="$(uname -s)"
-    if [[ "$$os" == "Darwin" ]]; then
+    if [[ "$os" == "Darwin" ]]; then
         echo "  ℹ Font installed via Brewfile (font-jetbrains-mono-nerd-font)"
-    elif [[ "$$os" == "Linux" ]]; then
+    elif [[ "$os" == "Linux" ]]; then
         if command -v pacman &>/dev/null; then
             sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd
         elif command -v dnf &>/dev/null; then
-            sudo dnf install -y jetbrains-mono-fonts-all
-            echo "  ℹ Install Nerd Font patched version from https://www.nerdfonts.com/font-downloads if needed"
+            if fc-list | grep -qi "JetBrainsMono.*Nerd"; then
+                echo "  ✓ JetBrainsMono Nerd Font already installed"
+            else
+                sudo dnf install -y jetbrains-mono-fonts-all
+                echo "  ℹ Install Nerd Font patched version from https://www.nerdfonts.com/font-downloads if needed"
+            fi
         elif command -v apt-get &>/dev/null; then
-            mkdir -p "$$HOME/.local/share/fonts"
+            mkdir -p "$HOME/.local/share/fonts"
             if fc-list | grep -qi "JetBrainsMono.*Nerd"; then
                 echo "  ✓ JetBrainsMono Nerd Font already installed"
             else
                 echo "  → Downloading JetBrainsMono Nerd Font..."
                 curl -fsSL -o /tmp/JetBrainsMono.tar.xz "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
-                tar xf /tmp/JetBrainsMono.tar.xz -C "$$HOME/.local/share/fonts/"
+                tar xf /tmp/JetBrainsMono.tar.xz -C "$HOME/.local/share/fonts/"
                 rm /tmp/JetBrainsMono.tar.xz
                 fc-cache -fv
                 echo "  ✓ JetBrainsMono Nerd Font installed"
@@ -234,44 +261,90 @@ font-install:
         fi
     fi
 
-# Import shell history into atuin
+# Import shell history into atuin (skips if already imported)
 atuin-import:
-    atuin import auto
+    #!/usr/bin/env bash
+    set -euo pipefail
+    marker="$HOME/.local/share/atuin/.import-done"
+    if [[ -f "$marker" ]]; then
+        echo "  ✓ atuin history already imported"
+    else
+        atuin import auto
+        mkdir -p "$(dirname "$marker")"
+        touch "$marker"
+        echo "  ✓ atuin history imported"
+    fi
 
 # Install yazi catppuccin theme
 yazi-theme:
-    ya pkg add yazi-rs/flavors:catppuccin-mocha
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ya pkg list 2>/dev/null | grep -q 'catppuccin-mocha'; then
+        echo "  ✓ catppuccin-mocha already installed"
+    else
+        ya pkg add yazi-rs/flavors:catppuccin-mocha
+        echo "  ✓ catppuccin-mocha installed"
+    fi
+
+# Sync Neovim plugins and Mason tools
+nvim-plugins:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v nvim &>/dev/null; then
+        echo "  ⚠ nvim not installed, skipping"
+        exit 0
+    fi
+    echo "  → syncing Lazy.nvim plugins"
+    nvim --headless "+Lazy! sync" +qa
+    echo "  → installing Mason tools"
+    nvim --headless "+MasonInstall shellcheck shfmt stylua prettier ruff hadolint tflint ansible-lint" +qa
+    echo "  ✓ nvim plugins and Mason tools synced"
 
 # Set default shell to zsh (no-op if already zsh)
 set-shell:
     #!/usr/bin/env bash
     set -euo pipefail
-    if [[ "$$SHELL" == *zsh ]]; then
+    current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+    if [[ "$current_shell" == *zsh ]]; then
         echo "  ✓ zsh is already the default shell"
     else
-        zsh_path="$(which zsh)"
+        zsh_path="$(command -v zsh)"
         os="$(uname -s)"
-        if [[ "$$os" == "Darwin" ]]; then
-            chsh -s "$$zsh_path"
+        if [[ "$os" == "Darwin" ]]; then
+            chsh -s "$zsh_path"
         else
-            sudo chsh -s "$$zsh_path" "$$USER"
+            sudo chsh -s "$zsh_path" "$USER"
         fi
-        echo "  → default shell changed to $$zsh_path (log out and back in to take effect)"
+        echo "  → default shell changed to $zsh_path (log out and back in to take effect)"
     fi
 
 # Check if all required tools are installed
 check:
     #!/usr/bin/env bash
-    missing=()
+    set -euo pipefail
+    have_cmd() {
+        case "$1" in
+            fd) command -v fd &>/dev/null || command -v fdfind &>/dev/null ;;
+            rg) command -v rg &>/dev/null || command -v ripgrep &>/dev/null ;;
+            *) command -v "$1" &>/dev/null ;;
+        esac
+    }
+    missing=0
+    missing_list=""
     for cmd in nvim tmux zsh git stow starship zoxide fzf fd rg bat eza delta atuin lazygit yazi; do
-        if ! command -v "$$cmd" &>/dev/null; then
-            missing+=("$$cmd")
+        if ! have_cmd "$cmd"; then
+            missing=1
+            if [ -z "$missing_list" ]; then
+                missing_list="$cmd"
+            else
+                missing_list="$missing_list $cmd"
+            fi
         fi
     done
-    if [ $${#missing[@]} -eq 0 ]; then
+    if [ "$missing" -eq 0 ]; then
         echo "All core tools installed."
     else
-        echo "Missing tools: $${missing[*]}"
+        echo "Missing tools: $missing_list"
         exit 1
     fi
 
@@ -286,14 +359,14 @@ install:
     echo ""
 
     echo "── Installing packages ──"
-    if [[ "$$os" == "Darwin" ]]; then
+    if [[ "$os" == "Darwin" ]]; then
         if command -v brew &>/dev/null; then
             just brew-install
         else
             echo "Homebrew not found. Install from https://brew.sh"
             exit 1
         fi
-    elif [[ "$$os" == "Linux" ]]; then
+    elif [[ "$os" == "Linux" ]]; then
         if command -v pacman &>/dev/null; then
             just pacman-install
         elif command -v dnf &>/dev/null; then
@@ -305,7 +378,7 @@ install:
             exit 1
         fi
     else
-        echo "Unsupported OS: $$os"
+        echo "Unsupported OS: $os"
         exit 1
     fi
     echo ""
@@ -314,8 +387,8 @@ install:
     just font-install
     echo ""
 
-    echo "── Stowing configs ──"
-    just stow-all
+    echo "── Restowing configs ──"
+    just restow-all
     echo ""
 
     echo "── ZSH plugins ──"
@@ -324,6 +397,10 @@ install:
 
     echo "── TPM (tmux plugin manager) ──"
     just tpm-install
+    echo ""
+
+    echo "── Neovim plugins ──"
+    just nvim-plugins
     echo ""
 
     echo "── Yazi theme ──"
@@ -351,12 +428,4 @@ install:
     echo ""
     echo "=== Done ==="
     echo "Next steps:"
-    echo "  • If on Debian, install git-delta manually:"
-    echo "    1. Download latest release from https://github.com/dandavison/delta/releases"
-    echo "    2. Install the downloaded package"
     echo "  • Log out and back in (or run 'exec zsh') to use zsh"
-    echo "  • Open nvim and install plugins:"
-    echo "    1. nvim"
-    echo "    2. Let lazy.nvim install plugins"
-    echo "    3. :MasonInstall shellcheck shfmt stylua prettier ruff hadolint tflint ansible-lint"
-    echo "  • Open tmux (tmux) and press prefix + I to install tmux plugins"
