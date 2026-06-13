@@ -74,3 +74,26 @@ fc-list | grep JetBrains
 | Working directory | Inherited by new windows |
 | Unfocused split opacity | 0.85 |
 | URL detection | Enabled |
+
+### Linux — Finnish keyboard / dead keys (`~`, `^`, `'`, etc.)
+
+Ghostty uses GTK on Wayland. Since GTK 4.20, dead keys need an input method. On **Fedora KDE**, IBus is the reliable fix; the wrapper falls back to `GTK_IM_MODULE=simple` if IBus is unavailable.
+
+**Finnish `~`:** AltGr + `+` (key right of `P`), release AltGr, then **Space** — tilde is a dead key on the Finnish layout.
+
+This package installs:
+
+- `~/.local/bin/ghostty-launch` — starts IBus if needed, sets IM env, disables GTK single-instance
+- `~/.local/share/applications/com.mitchellh.ghostty.desktop` — menu / Ctrl+Alt+T entry (DBusActivatable=false so KDE does not reuse an old instance)
+- `gtk-single-instance = false` in Ghostty config
+- `ghostty()` zsh wrapper (Arch/Fedora) when launched from another terminal
+
+Install or refresh:
+
+```bash
+just ghostty-desktop
+```
+
+Then **quit every Ghostty window** and reopen from the app menu (not an already-running instance).
+
+If `~` still fails, run `ibus-setup` once and ensure IBus is enabled in KDE System Settings → Input Devices → Virtual Keyboard.

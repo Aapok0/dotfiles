@@ -20,6 +20,10 @@ stow-all:
     @for dir in {{terminal}} {{core_dirs}}; do \
         if [ -d "$dir" ]; then \
             echo "  → $dir"; \
+            if [ "$dir" = "atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
+                echo "  → replacing installer atuin config with dotfiles version"; \
+                rm -f "$HOME/.config/atuin/config.toml"; \
+            fi; \
             stow -v --target="$HOME" "$dir" 2>&1 | grep -v "^$" || true; \
         fi; \
     done
@@ -40,13 +44,25 @@ restow-all:
     @for dir in {{terminal}} {{core_dirs}}; do \
         if [ -d "$dir" ]; then \
             echo "  → $dir"; \
+            if [ "$dir" = "atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
+                echo "  → replacing installer atuin config with dotfiles version"; \
+                rm -f "$HOME/.config/atuin/config.toml"; \
+            fi; \
             stow -v -R --target="$HOME" "$dir" 2>&1 | grep -v "^$" || true; \
         fi; \
     done
     @echo "Done."
 
 stow name:
-    stow -v --target="$HOME" {{name}}
+    #!/usr/bin/env bash
+    if [[ "{{name}}" == "atuin" ]]; then
+        target="$HOME/.config/atuin/config.toml"
+        if [[ -f "$target" && ! -L "$target" ]]; then
+            echo "  → replacing installer atuin config with dotfiles version"
+            rm -f "$target"
+        fi
+    fi
+    stow -v --target="$HOME" "{{name}}"
 
 unstow name:
     stow -v -D --target="$HOME" {{name}}
@@ -329,11 +345,49 @@ atuin-import:
         echo "  ✓ atuin history imported"
     fi
 
+# Install Ghostty desktop override (dead keys / Finnish ~ on Linux GTK)
+ghostty-desktop:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$(uname -s)" != "Linux" ]]; then
+        exit 0
+    fi
+    if ! command -v ghostty &>/dev/null; then
+        echo "  ⚠ ghostty not installed, skipping desktop override"
+        exit 0
+    fi
+    mkdir -p "$HOME/.local/bin" "$HOME/.local/share/applications"
+    install -m 755 ghostty/bin/ghostty-launch "$HOME/.local/bin/ghostty-launch"
+    sed "s|@HOME@|$HOME|g" ghostty/desktop/com.mitchellh.ghostty.desktop.in \
+        > "$HOME/.local/share/applications/com.mitchellh.ghostty.desktop"
+    if command -v ibus-daemon &>/dev/null; then
+        systemctl --user enable --now org.freedesktop.IBus.session.generic.service 2>/dev/null \
+            || ibus-daemon -drx &
+    fi
+    if command -v update-desktop-database &>/dev/null; then
+        update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+    fi
+    echo "  ✓ Ghostty launch wrapper + desktop override installed"
+    echo "  ℹ Quit all Ghostty windows, then reopen from menu (Ctrl+Alt+T)"
+
 # Install yazi catppuccin theme
 yazi-theme:
     #!/usr/bin/env bash
     set -euo pipefail
-    if ya pkg list 2>/dev/null | grep -q 'catppuccin-mocha'; then
+    if ! command -v ya &>/dev/null; then
+        echo "  ⚠ ya not found (install yazi first)"
+        exit 0
+    fi
+    if [[ -d "$HOME/.config/yazi" ]]; then
+        export YAZI_CONFIG_HOME="$HOME/.config/yazi"
+    elif [[ -d yazi/.config/yazi ]]; then
+        export YAZI_CONFIG_HOME="$(pwd)/yazi/.config/yazi"
+    fi
+    pkg_toml="${YAZI_CONFIG_HOME:-$HOME/.config/yazi}/package.toml"
+    if [[ -f "$pkg_toml" ]] && grep -q '^\[\[flavor\.deps\]\]' "$pkg_toml"; then
+        ya pkg install
+        echo "  ✓ yazi flavors installed from package.toml"
+    elif ya pkg list 2>/dev/null | grep -q 'catppuccin-mocha'; then
         echo "  ✓ catppuccin-mocha already installed"
     else
         ya pkg add yazi-rs/flavors:catppuccin-mocha
@@ -452,6 +506,12 @@ install:
     echo "── Restowing configs ──"
     just restow-all
     echo ""
+
+    if [[ "$os" == "Linux" ]]; then
+        echo "── Ghostty desktop (Linux dead keys) ──"
+        just ghostty-desktop
+        echo ""
+    fi
 
     echo "── ZSH plugins ──"
     just zsh-plugins

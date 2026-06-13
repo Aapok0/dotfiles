@@ -274,12 +274,23 @@ case "$DISTRO" in
         ;;
     Arch|Fedora)
         # NVM - Node Version Manager
-        # Check package manager location first (e.g. pacman -S nvm on Arch)
+        # Distro package (pacman -S nvm / dnf install nvm)
         if [[ -f /usr/share/nvm/init-nvm.sh ]]; then
             source /usr/share/nvm/init-nvm.sh
-        # Fall back to user-installed location
         elif [[ -s "$HOME/.nvm/init-nvm.sh" ]]; then
             source "$HOME/.nvm/init-nvm.sh"
+        # curl install.sh (linux-setup) — uses nvm.sh, not init-nvm.sh
+        elif [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+            export NVM_DIR="$HOME/.nvm"
+            source "$HOME/.nvm/nvm.sh"
+            [[ -s "$HOME/.nvm/bash_completion" ]] && source "$HOME/.nvm/bash_completion"
+        fi
+
+        # Ghostty on GTK 4.20+ Wayland: dead keys (Finnish ~, etc.)
+        if command -v ghostty-launch &>/dev/null; then
+            ghostty() { command ghostty-launch "$@"; }
+        elif command -v ghostty &>/dev/null; then
+            ghostty() { GTK_IM_MODULE=simple command ghostty --gtk-single-instance=false "$@"; }
         fi
         ;;
     darwin)

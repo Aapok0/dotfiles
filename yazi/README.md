@@ -39,8 +39,12 @@ stow yazi
 Install the Catppuccin Mocha flavor (or use `just yazi-theme` from the repo root):
 
 ```bash
+ya pkg install   # from package.toml lockfile
+# or first-time add:
 ya pkg add yazi-rs/flavors:catppuccin-mocha
 ```
+
+Downloaded flavors live in `flavors/` and are **gitignored**; commit `package.toml` only.
 
 ## Usage
 

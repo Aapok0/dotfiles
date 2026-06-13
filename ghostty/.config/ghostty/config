@@ -48,3 +48,6 @@ unfocused-split-opacity = 0.85
 
 # URL detection
 link-url = true
+
+# Linux: each launch must carry GTK_IM_MODULE (see ghostty-launch + ghostty-desktop)
+gtk-single-instance = false
