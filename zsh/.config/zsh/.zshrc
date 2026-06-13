@@ -14,7 +14,7 @@ fi
 # PATH BOOTSTRAP
 ################################################################################
 # Must run BEFORE the prompt, completions, and command-line tools below, since
-# those binaries (starship, fzf, zoxide, thefuck, coreutils...) live in dirs
+# those binaries (starship, fzf, zoxide, thefuck, pipx tools, coreutils...) live in dirs
 # that aren't on the default macOS PATH until brew shellenv adds them.
 
 case "$DISTRO" in
@@ -27,6 +27,10 @@ case "$DISTRO" in
             export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
         ;;
 esac
+
+# Non-default install locations (must be on PATH before COMMAND LINE TOOLS below)
+[[ -d "$HOME/.atuin/bin" ]] && export PATH="$HOME/.atuin/bin:$PATH"
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
 
 ################################################################################
 # HISTORY CONFIG
@@ -246,7 +250,10 @@ export BAT_THEME="Catppuccin Mocha"
 export MANPAGER='nvim +Man!'
 
 # thefuck - https://github.com/nvbn/thefuck
-eval $(thefuck --alias)
+# Fedora RPM breaks on Python 3.14 (missing distutils); pipx install is preferred there.
+if command -v thefuck &>/dev/null && thefuck --version &>/dev/null 2>&1; then
+    eval "$(thefuck --alias)"
+fi
 
 # pnpm - Node.js package manager
 export PNPM_HOME="${HOME}/.local/share/pnpm"
@@ -309,10 +316,6 @@ fi
 # Tfswitch - Terraform version manager
 # Install: https://github.com/warrensbox/terraform-switcher
 [[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
-
-# Batman - CLI for working with Finago
-# Install: place in ~/.local/bin
-[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
 
 # Flyctl - Fly.io CLI
 # Install: https://fly.io/docs/getting-started/installing-flyctl/

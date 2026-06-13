@@ -174,9 +174,13 @@ dnf-install:
         ripgrep fzf fd-find bat zoxide \
         direnv btop entr xclip wl-clipboard jq gh \
         ffmpeg-free p7zip p7zip-plugins poppler-utils ImageMagick \
-        ansible-core kubectl helm procs tealdeer thefuck du-dust; do
+        ansible-core kubectl helm procs tealdeer python3-setuptools du-dust; do
         dnf_install "$pkg"
     done
+
+    if ! command -v thefuck &>/dev/null; then
+        pipx install thefuck 2>/dev/null || echo "Install thefuck: pipx install thefuck"
+    fi
 
     if ! command -v eza &>/dev/null; then
         if ! dnf copr list --enabled 2>/dev/null | grep -q 'alternateved/eza'; then
@@ -196,6 +200,7 @@ dnf-install:
     if ! command -v atuin &>/dev/null; then
         bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
     fi
+    [[ -d "$HOME/.atuin/bin" ]] && export PATH="$HOME/.atuin/bin:$PATH"
 
     if ! command -v lazygit &>/dev/null; then
         if ! dnf copr list --enabled 2>/dev/null | grep -q 'atim/lazygit'; then
@@ -205,6 +210,9 @@ dnf-install:
     fi
 
     if ! command -v yazi &>/dev/null; then
+        if ! command -v cargo &>/dev/null; then
+            dnf_install rust cargo
+        fi
         cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires rust/cargo)"
     fi
 
@@ -365,6 +373,8 @@ check:
         case "$1" in
             fd) command -v fd &>/dev/null || command -v fdfind &>/dev/null ;;
             rg) command -v rg &>/dev/null || command -v ripgrep &>/dev/null ;;
+            atuin) command -v atuin &>/dev/null || [[ -x "$HOME/.atuin/bin/atuin" ]] ;;
+            yazi) command -v yazi &>/dev/null || command -v ya &>/dev/null ;;
             *) command -v "$1" &>/dev/null ;;
         esac
     }
