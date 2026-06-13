@@ -75,7 +75,7 @@ apt-install:
         direnv thefuck tldr \
         btop entr xclip wl-clipboard jq \
         ffmpeg p7zip-full poppler-utils imagemagick \
-        terraform ansible kubectl helm
+        ansible kubectl helm
 
     if ! command -v eza &>/dev/null; then
         if [[ ! -f /etc/apt/sources.list.d/gierens.list ]]; then
@@ -142,7 +142,7 @@ apt-install:
         cargo install procs 2>/dev/null || echo "Install procs: cargo install procs (requires cargo)"
     fi
 
-# Arch (all packages available in official repos)
+# Arch (official repos)
 pacman-install:
     sudo pacman -S --needed \
         neovim tmux zsh git git-delta stow curl \
@@ -151,20 +151,47 @@ pacman-install:
         atuin direnv thefuck tldr \
         lazygit yazi btop entr xclip wl-clipboard jq github-cli \
         ffmpeg p7zip poppler imagemagick \
-        terraform ansible kubectl helm
+        ansible kubectl helm
 
-# Fedora
+# Fedora — one package per dnf install (already-installed RPMs must not be batched)
 dnf-install:
     #!/usr/bin/env bash
     set -euo pipefail
-    sudo dnf install -y \
+
+    dnf_install() {
+        local pkg=$1
+        if rpm -q "$pkg" &>/dev/null; then
+            echo "  ✓ $pkg (already installed)"
+            return 0
+        fi
+        echo "  → installing $pkg"
+        sudo dnf install -y "$pkg"
+    }
+
+    for pkg in \
         neovim tmux zsh git git-delta stow curl \
         gcc make cmake nodejs npm python3 \
-        ripgrep fzf fd-find bat eza zoxide starship dust procs \
-        direnv thefuck tldr \
-        btop entr xclip wl-clipboard jq gh \
-        ffmpeg-free sevenzip poppler-utils ImageMagick \
-        terraform ansible kubectl helm
+        ripgrep fzf fd-find bat zoxide \
+        direnv btop entr xclip wl-clipboard jq gh \
+        ffmpeg-free p7zip p7zip-plugins poppler-utils ImageMagick \
+        ansible-core kubectl helm procs tealdeer thefuck du-dust; do
+        dnf_install "$pkg"
+    done
+
+    if ! command -v eza &>/dev/null; then
+        if ! dnf copr list --enabled 2>/dev/null | grep -q 'alternateved/eza'; then
+            sudo dnf copr enable alternateved/eza -y
+        fi
+        dnf_install eza
+    fi
+
+    if ! command -v dust &>/dev/null; then
+        cargo install du-dust 2>/dev/null || echo "Install dust: cargo install du-dust (requires cargo)"
+    fi
+
+    if ! command -v starship &>/dev/null; then
+        curl -sS https://starship.rs/install.sh | sh -s -- -y
+    fi
 
     if ! command -v atuin &>/dev/null; then
         bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
@@ -174,12 +201,24 @@ dnf-install:
         if ! dnf copr list --enabled 2>/dev/null | grep -q 'atim/lazygit'; then
             sudo dnf copr enable atim/lazygit -y
         fi
-        sudo dnf install -y lazygit
+        dnf_install lazygit
     fi
 
     if ! command -v yazi &>/dev/null; then
-        cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires cargo)"
+        cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires rust/cargo)"
     fi
+
+# Install tfswitch (Terraform version manager; replaces distro terraform package)
+tfswitch-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if command -v tfswitch &>/dev/null; then
+        echo "  ✓ tfswitch already installed"
+        exit 0
+    fi
+    mkdir -p "$HOME/.local/bin"
+    curl -fsSL https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash -s -- -b "$HOME/.local/bin"
+    echo "  ✓ tfswitch installed to ~/.local/bin/tfswitch"
 
 # ──── Utilities ───────────────────────────────────────────
 
@@ -382,6 +421,12 @@ install:
         exit 1
     fi
     echo ""
+
+    if [[ "$os" == "Linux" ]]; then
+        echo "── tfswitch (Terraform versions) ──"
+        just tfswitch-install
+        echo ""
+    fi
 
     echo "── Font ──"
     just font-install

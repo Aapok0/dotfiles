@@ -14,15 +14,16 @@ Terminal emulator configuration for [Ghostty](https://ghostty.org/).
 # macOS
 brew install --cask ghostty
 
-# Arch (AUR)
-yay -S ghostty
+# Arch (official repos)
+sudo pacman -S ghostty
 
-# Fedora (COPR)
-sudo dnf copr enable pgdevs/ghostty
+# Fedora (COPR — not in official repos)
+sudo dnf copr enable scottames/ghostty
 sudo dnf install ghostty
 
-# Other Linux — build from source
-# See https://ghostty.org/docs/install
+# Debian (community repo — not in official repos)
+# See https://ghostty.org/docs/install/binary#debian
+# linux-setup setup-debian enables debian.griffo.io automatically
 ```
 
 ## Font
