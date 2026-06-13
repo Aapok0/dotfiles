@@ -209,12 +209,19 @@ dnf-install:
         dnf_install lazygit
     fi
 
-    if ! command -v yazi &>/dev/null; then
-        if ! command -v cargo &>/dev/null; then
-            dnf_install rust cargo
-        fi
-        cargo install --locked yazi-fm yazi-cli 2>/dev/null || echo "Install yazi: cargo install --locked yazi-fm yazi-cli (requires rust/cargo)"
+    if ! command -v yazi &>/dev/null && ! command -v ya &>/dev/null; then
+        echo "  → installing yazi (prebuilt binary)"
+        tmp=$(mktemp -d)
+        curl -fsSL -o "$tmp/yazi.zip" \
+            "https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-gnu.zip"
+        unzip -q "$tmp/yazi.zip" -d "$tmp/extract"
+        arch_dir=$(find "$tmp/extract" -mindepth 1 -maxdepth 1 -type d | head -1)
+        mkdir -p "$HOME/.local/bin"
+        install -m 755 "$arch_dir/yazi" "$arch_dir/ya" "$HOME/.local/bin/"
+        rm -rf "$tmp"
+        echo "  ✓ yazi installed to ~/.local/bin"
     fi
+    export PATH="$HOME/.local/bin:$PATH"
 
 # Install tfswitch (Terraform version manager; replaces distro terraform package)
 tfswitch-install:

@@ -48,7 +48,7 @@ After install, open tmux and press `prefix + I` to install tmux plugins, then `e
 ```bash
 just stow nvim
 just stow zsh
-just terminal=kitty stow-all   # override default terminal
+just terminal=ghostty stow-all   # override default terminal
 ```
 
 ## Task Runner
@@ -67,7 +67,8 @@ A [justfile](justfile) automates common operations:
 | `just brew-install` | Install macOS deps via Brewfile |
 | `just apt-install` | Install core deps (Debian) |
 | `just pacman-install` | Install core deps (Arch) |
-| `just dnf-install` | Install core deps (Fedora) |
+| `just dnf-install` | Install core deps (Fedora); per-package dnf, pipx thefuck, prebuilt yazi |
+| `just tfswitch-install` | Install Terraform version manager (replaces distro terraform package) |
 | `just zsh-plugins` | Clone ZSH plugins (skips existing) |
 | `just tpm-install` | Clone TPM for tmux (skips if exists) |
 | `just set-shell` | Set default shell to zsh (no-op if already zsh) |
@@ -92,8 +93,8 @@ One terminal is stowed by default (configurable via `just terminal=<name>`).
 
 | Config | Description |
 |---|---|
-| [kitty](kitty/) | GPU-accelerated terminal with Catppuccin Mocha colors, powerline tabs, transparency |
-| [wezterm](wezterm/) | Lua-configurable terminal with built-in multiplexing, WebGPU rendering, integrated titlebar |
+| [kitty](kitty/) | GPU-accelerated terminal with Catppuccin Mocha colors, powerline tabs, transparency (optional; default is ghostty) |
+| [wezterm](wezterm/) | Lua-configurable terminal with built-in multiplexing, WebGPU rendering, integrated titlebar (optional; default is ghostty) |
 | [ghostty](ghostty/) | Native-rendering terminal by Mitchell Hashimoto, minimal config, background blur |
 
 All three use **JetBrainsMono Nerd Font** and **Catppuccin Mocha** theme.
