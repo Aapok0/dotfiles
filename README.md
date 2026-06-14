@@ -25,7 +25,7 @@ cd $HOME/Workspace/dotfiles
 just install
 ```
 
-This auto-detects your OS and runs the appropriate package manager, then stows all configs, clones ZSH plugins and TPM, installs the yazi theme, and imports shell history into atuin.
+This auto-detects your OS and runs the appropriate package manager, then stows all configs, clones ZSH plugins and personal tools, installs TPM, the yazi theme, and imports shell history into atuin.
 
 ### Manual / step-by-step
 
@@ -34,6 +34,7 @@ just pacman-install        # or apt-install / dnf-install / brew-install
 just font-install
 just stow-all              # symlink all configs
 just zsh-plugins           # clone ZSH plugins
+just tools-clone           # clone personal shell tools (~/Workspace/tools)
 just tpm-install           # clone tmux plugin manager
 just set-shell             # change default shell to zsh
 just yazi-theme            # install yazi Catppuccin theme
@@ -70,6 +71,7 @@ A [justfile](justfile) automates common operations:
 | `just dnf-install` | Install core deps (Fedora); per-package dnf, pipx thefuck, prebuilt yazi |
 | `just tfswitch-install` | Install Terraform version manager (replaces distro terraform package) |
 | `just zsh-plugins` | Clone ZSH plugins (skips existing) |
+| `just tools-clone` | Clone [personal tools](https://github.com/Aapok0/tools) to `~/Workspace/tools` |
 | `just tpm-install` | Clone TPM for tmux (skips if exists) |
 | `just set-shell` | Set default shell to zsh (no-op if already zsh) |
 | `just yazi-theme` | Install yazi Catppuccin theme |
@@ -175,6 +177,12 @@ These tools are integrated into the ZSH config and expected to be installed:
 | [procs](https://github.com/dalance/procs) | Process viewer |
 | [gh](https://cli.github.com/) | GitHub CLI |
 | [just](https://github.com/casey/just) | Task runner |
+
+### Personal tools
+
+| Repo | Purpose |
+|---|---|
+| [tools](https://github.com/Aapok0/tools) | Clone with `just tools-clone`, on `PATH` via [zsh config](zsh/) |
 
 ## macOS Setup
 

@@ -280,6 +280,22 @@ zsh-plugins:
         git clone "https://github.com/junegunn/fzf-git.sh.git" "$tools_dir/fzf-git.sh"
     fi
 
+# Clone personal shell tools (https://github.com/Aapok0/tools)
+tools-clone:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    tools_dir="$HOME/Workspace/tools"
+    tools_repo="git@github.com:Aapok0/tools.git"
+    if [[ -d "$tools_dir/.git" ]]; then
+        echo "  ✓ tools already cloned"
+    else
+        mkdir -p "$HOME/Workspace"
+        echo "  → cloning tools"
+        git clone "$tools_repo" "$tools_dir"
+    fi
+    chmod +x "$tools_dir"/*
+    echo "  ✓ tools ready at $tools_dir (on PATH via zsh config)"
+
 # Clone TPM (tmux plugin manager)
 tpm-install:
     #!/usr/bin/env bash
@@ -515,6 +531,10 @@ install:
 
     echo "── ZSH plugins ──"
     just zsh-plugins
+    echo ""
+
+    echo "── Personal tools ──"
+    just tools-clone
     echo ""
 
     echo "── TPM (tmux plugin manager) ──"
