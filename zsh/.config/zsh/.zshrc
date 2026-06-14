@@ -180,6 +180,9 @@ esac
 # COMMAND LINE TOOLS
 ################################################################################
 
+# Personal tools
+[[ -d "$HOME/Workspace/tools" ]] && export PATH="$HOME/Workspace/tools:$PATH"
+
 # fzf - fuzzy finder
 eval "$(fzf --zsh)"
 bindkey -r '^R'  # unbind fzf's Ctrl+R so atuin can use it
@@ -190,7 +193,7 @@ if (( $+commands[atuin] )); then
     eval "$(atuin init zsh --disable-up-arrow)"
 fi
 
-# FZF theme - Catppuccin Mocha
+# fzf theme - Catppuccin Mocha
 export FZF_DEFAULT_OPTS=" \
 --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
 --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
@@ -215,7 +218,7 @@ export FZF_DEFAULT_COMMAND="$FD_CMD --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="$FD_CMD --type=d --hidden --strip-cwd-prefix --exclude .git"
 
-# FZF completion functions - use fd for listing
+# fzf completion functions - use fd for listing
 _fzf_compgen_path() {
     $FD_CMD --hidden --exclude .git . "$1"
 }
@@ -224,11 +227,11 @@ _fzf_compgen_dir() {
     $FD_CMD --type=d --hidden --exclude .git . "$1"
 }
 
-# FZF preview options
+# fzf preview options
 export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-# FZF custom preview function
+# fzf custom preview function
 _fzf_comprun() {
     local command=$1
     shift
