@@ -79,9 +79,9 @@ set statusline+=%F " Full path to the file in the buffer
 set statusline+=\ %h%m%r " Flags for help(h), modification(m) to file and readonly(r)
 set statusline+=\ %y " Filetype
 set statusline+=%= " Switch side
-set statusline+=%l:%c%V " Line:column/virtual column (won't show if same as c) 
+set statusline+=%l:%c%V " Line:column/virtual column (won't show if same as c)
 set statusline+=\ \ \ \ \ \ \ %P " Percentage of file scrolled
-set statusline+=\ 
+set statusline+=\
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MAPPINGS
@@ -92,7 +92,7 @@ let mapleader = ' '
 
 " Alias for exiting a mode
 inoremap jk <Esc>
-vnoremap jk <Esc> 
+vnoremap jk <Esc>
 
 " Alias for yanking to and pasting from clipboard
 vnoremap <leader>y "+y

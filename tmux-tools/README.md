@@ -12,7 +12,7 @@ Same as tmuxz, but you don't give any keyword. The script opens a fuzzy finder (
 
 1. Install the required command line tools: [tmux](https://github.com/tmux/tmux/wiki/Installing), [zoxide](https://github.com/ajeetdsouza/zoxide#installation) and [fzf](https://github.com/junegunn/fzf#installation)
 2. Clone this repository
-3. Add the script to path in one of the following ways: 
+3. Add the script to path in one of the following ways:
 
 ```bash
 # Move the scripts to a bin directory in path variable (for example /usr/local/bin)
