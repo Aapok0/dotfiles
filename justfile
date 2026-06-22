@@ -181,7 +181,7 @@ dnf-install:
             return 0
         fi
         echo "  → installing $pkg"
-        sudo dnf install -y "$pkg"
+        sudo dnf install -y --allowerasing "$pkg"
     }
 
     for pkg in \
@@ -189,7 +189,7 @@ dnf-install:
         gcc make cmake nodejs npm python3 \
         ripgrep fzf fd-find bat zoxide \
         direnv btop entr xclip wl-clipboard jq gh \
-        ffmpeg-free p7zip p7zip-plugins poppler-utils ImageMagick \
+        ffmpeg p7zip p7zip-plugins poppler-utils ImageMagick \
         ansible-core kubectl helm procs tealdeer python3-setuptools du-dust; do
         dnf_install "$pkg"
     done
