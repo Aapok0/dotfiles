@@ -51,17 +51,16 @@ brew "ansible"
 brew "kubectl"
 brew "helm"
 
-# Linters & formatters
-# Note: These are also available via :MasonInstall in Neovim for IDE integration
-# Install system-wide for command-line usage:
-#brew "shellcheck"
-#brew "shfmt"
-#brew "stylua"
-#brew "prettier"
-#brew "ruff"
-#brew "hadolint"
-#brew "tflint"
-#brew "ansible-lint"
+# Linters & formatters (used by nvim-lint + conform.nvim; conform/nvim-lint
+# resolve these from $PATH, so a system install also covers Neovim)
+brew "shellcheck"
+brew "shfmt"
+brew "stylua"
+brew "prettier"
+brew "ruff"
+brew "hadolint"
+brew "tflint"
+brew "ansible-lint"
 
 # Build dependencies
 brew "node"

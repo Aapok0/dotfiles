@@ -162,7 +162,7 @@ apt-install:
 pacman-install:
     sudo pacman -S --needed \
         neovim tmux zsh git git-delta stow curl \
-        base-devel cmake nodejs npm python \
+        base-devel cmake nodejs npm python rust \
         ripgrep fzf fd bat eza zoxide starship dust procs \
         atuin direnv thefuck tldr \
         lazygit yazi btop entr xclip wl-clipboard jq github-cli \
@@ -186,7 +186,7 @@ dnf-install:
 
     for pkg in \
         neovim tmux zsh git git-delta stow curl \
-        gcc make cmake nodejs npm python3 \
+        gcc make cmake nodejs npm python3 cargo \
         ripgrep fzf fd-find bat zoxide \
         direnv btop entr xclip wl-clipboard jq gh \
         ffmpeg p7zip p7zip-plugins poppler-utils ImageMagick \
@@ -410,7 +410,7 @@ yazi-theme:
         echo "  ✓ catppuccin-mocha installed"
     fi
 
-# Sync Neovim plugins and Mason tools
+# Sync Neovim plugins (LSP servers auto-install via mason-lspconfig on first load)
 nvim-plugins:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -420,9 +420,104 @@ nvim-plugins:
     fi
     echo "  → syncing Lazy.nvim plugins"
     nvim --headless "+Lazy! sync" +qa
-    echo "  → installing Mason tools"
-    nvim --headless "+MasonInstall shellcheck shfmt stylua prettier ruff hadolint tflint ansible-lint" +qa
-    echo "  ✓ nvim plugins and Mason tools synced"
+    echo "  ✓ nvim plugins synced"
+
+# conform/nvim-lint resolve binaries from $PATH, so a system install covers nvim too.
+# Distro repos first, official installers/cargo/npm fallback; macOS: see Brewfile.
+
+# Install nvim linters/formatters system-wide (shared by shell + nvim)
+nvim-tools:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    os="$(uname -s)"
+    if [[ "$os" == "Darwin" ]]; then
+        echo "  ℹ macOS: installed via Brewfile (just brew-install)"
+        exit 0
+    fi
+
+    have() { command -v "$1" &>/dev/null; }
+    mkdir -p "$HOME/.local/bin"
+
+    # Tools available in distro repos: shellcheck, shfmt, ruff, ansible-lint
+    if have pacman; then
+        sudo pacman -S --needed --noconfirm shellcheck shfmt ruff ansible-lint
+    elif have dnf; then
+        for pkg in ShellCheck shfmt ruff ansible-lint; do
+            if rpm -q "$pkg" &>/dev/null; then
+                echo "  ✓ $pkg (already installed)"
+            else
+                echo "  → installing $pkg"
+                sudo dnf install -y "$pkg"
+            fi
+        done
+    elif have apt-get; then
+        sudo apt-get update
+        sudo apt-get install -y shellcheck shfmt ansible-lint
+    fi
+
+    # ruff — Astral standalone installer (~/.local/bin) when not in repos
+    if ! have ruff; then
+        echo "  → installing ruff (astral installer)"
+        curl -LsSf https://astral.sh/ruff/install.sh | sh
+    fi
+
+    # ansible-lint — pipx fallback (official recommended) when not in repos
+    if ! have ansible-lint; then
+        echo "  → installing ansible-lint (pipx)"
+        pipx install ansible-lint 2>/dev/null || echo "  ⚠ install ansible-lint manually: pipx install ansible-lint"
+    fi
+
+    # stylua — not packaged; build via cargo (official method)
+    if ! have stylua; then
+        echo "  → installing stylua (cargo)"
+        cargo install stylua 2>/dev/null || echo "  ⚠ install stylua manually: cargo install stylua (needs cargo)"
+    fi
+
+    # prettier — official method is npm global install
+    if ! have prettier; then
+        echo "  → installing prettier (npm)"
+        npm install -g prettier 2>/dev/null || echo "  ⚠ install prettier manually: npm install -g prettier (needs npm)"
+    fi
+
+    # hadolint — prebuilt binary from GitHub releases (official method)
+    if ! have hadolint; then
+        case "$(uname -m)" in
+            x86_64) hl_arch="x86_64" ;;
+            aarch64|arm64) hl_arch="arm64" ;;
+            *) hl_arch="" ;;
+        esac
+        if [[ -n "$hl_arch" ]]; then
+            echo "  → installing hadolint (prebuilt binary)"
+            curl -fsSL -o "$HOME/.local/bin/hadolint" \
+                "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-${hl_arch}"
+            chmod +x "$HOME/.local/bin/hadolint"
+        else
+            echo "  ⚠ unsupported arch for hadolint: $(uname -m)"
+        fi
+    fi
+
+    # tflint — prebuilt binary from GitHub releases (the install script is being
+    # retired 2026-07-01; download the release zip directly instead)
+    if ! have tflint; then
+        case "$(uname -m)" in
+            x86_64) tf_arch="amd64" ;;
+            aarch64|arm64) tf_arch="arm64" ;;
+            *) tf_arch="" ;;
+        esac
+        if [[ -n "$tf_arch" ]]; then
+            echo "  → installing tflint (prebuilt binary)"
+            tmp="$(mktemp -d)"
+            curl -fsSL -o "$tmp/tflint.zip" \
+                "https://github.com/terraform-linters/tflint/releases/latest/download/tflint_linux_${tf_arch}.zip"
+            unzip -q "$tmp/tflint.zip" -d "$tmp"
+            install -m 755 "$tmp/tflint" "$HOME/.local/bin/tflint"
+            rm -rf "$tmp"
+        else
+            echo "  ⚠ unsupported arch for tflint: $(uname -m)"
+        fi
+    fi
+
+    echo "  ✓ nvim linters/formatters installed"
 
 # Set default shell to zsh (no-op if already zsh)
 set-shell:
@@ -543,6 +638,10 @@ install:
 
     echo "── Neovim plugins ──"
     just nvim-plugins
+    echo ""
+
+    echo "── Neovim linters/formatters ──"
+    just nvim-tools
     echo ""
 
     echo "── Yazi theme ──"

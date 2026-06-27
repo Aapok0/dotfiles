@@ -31,6 +31,8 @@ esac
 # Non-default install locations (must be on PATH before COMMAND LINE TOOLS below)
 [[ -d "$HOME/.atuin/bin" ]] && export PATH="$HOME/.atuin/bin:$PATH"
 [[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.cargo/bin" ]] && export PATH="$HOME/.cargo/bin:$PATH"
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
 ################################################################################
 # HISTORY CONFIG
