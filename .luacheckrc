@@ -6,8 +6,10 @@
 std = "luajit"
 
 -- Globals injected by the host runtimes.
-read_globals = {
+globals = {
 	"vim", -- Neovim
+}
+read_globals = {
 	"wezterm", -- WezTerm (also required as a module, but kept for safety)
 }
 
