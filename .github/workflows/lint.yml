@@ -1,0 +1,98 @@
+name: lint
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # Pinned tool versions, kept up to date by Renovate (see renovate.json).
+  # renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
+  STYLUA_VERSION: v2.5.2
+  # renovate: datasource=github-releases depName=mvdan/sh
+  SHFMT_VERSION: v3.13.1
+  # renovate: datasource=github-releases depName=tamasfe/taplo
+  TAPLO_VERSION: "0.10.0"
+  # renovate: datasource=github-releases depName=gitleaks/gitleaks
+  GITLEAKS_VERSION: "8.30.1"
+
+jobs:
+  stylua:
+    name: stylua (Lua format)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install stylua
+        run: |
+          curl -fsSL -o /tmp/stylua.zip \
+            "https://github.com/JohnnyMorganz/StyLua/releases/download/${STYLUA_VERSION}/stylua-linux-x86_64.zip"
+          unzip -o /tmp/stylua.zip -d /tmp >/dev/null
+          chmod +x /tmp/stylua
+      - name: Check formatting
+        run: /tmp/stylua --check nvim wezterm
+
+  luacheck:
+    name: luacheck (Lua lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install luacheck
+        run: sudo apt-get update && sudo apt-get install -y luacheck
+      - name: Run luacheck
+        run: luacheck nvim wezterm
+
+  shell:
+    name: shellcheck + shfmt
+    runs-on: ubuntu-latest
+    # Own bash/sh only. zsh files (.zshrc/.zshenv/.zprofile + plugins) are
+    # excluded: neither shellcheck nor shfmt support zsh syntax.
+    env:
+      FILES: >-
+        gitconfig/alias.sh
+        ghostty/bin/ghostty-launch
+        tmux-tools/usr/local/bin/tmuxf
+        tmux-tools/usr/local/bin/tmuxz
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run shellcheck
+        run: shellcheck $FILES
+      - name: Install shfmt
+        run: |
+          curl -fsSL -o /tmp/shfmt \
+            "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64"
+          chmod +x /tmp/shfmt
+      - name: Check formatting (-i 4 -ci)
+        run: /tmp/shfmt -d -i 4 -ci $FILES
+
+  taplo:
+    name: taplo (TOML)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install taplo
+        run: |
+          curl -fsSL -o /tmp/taplo.gz \
+            "https://github.com/tamasfe/taplo/releases/download/${TAPLO_VERSION}/taplo-linux-x86_64.gz"
+          gunzip -f /tmp/taplo.gz
+          chmod +x /tmp/taplo
+      - name: Lint TOML
+        run: /tmp/taplo lint $(git ls-files '*.toml')
+      - name: Check TOML formatting
+        run: /tmp/taplo fmt --check --diff $(git ls-files '*.toml')
+
+  gitleaks:
+    name: gitleaks (secret scan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          curl -fsSL -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          chmod +x /tmp/gitleaks
+      - name: Scan history for secrets
+        run: /tmp/gitleaks git --redact .

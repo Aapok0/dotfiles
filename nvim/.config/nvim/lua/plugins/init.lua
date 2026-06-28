@@ -1,46 +1,52 @@
 return {
   -- Startup menu
   {
-    'goolord/alpha-nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function ()
-      require('alpha').setup(require'alpha.themes.startify'.config)
-    end
+    "goolord/alpha-nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("alpha").setup(require("alpha.themes.startify").config)
+    end,
   },
 
   -- Undotree - go through old changes
-  'mbbill/undotree',
+  "mbbill/undotree",
 
   -- Telescope - fuzzy finder for moving between files
   -- Config in ../telescope.lua
   {
-    'nvim-telescope/telescope.nvim', branch = '0.1.x',
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
     dependencies = {
-      'nvim-lua/plenary.nvim',
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-    }
+      "nvim-lua/plenary.nvim",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
   },
 
   -- LSP and completions
   -- Config in ../lsp.lua
   {
-    'neovim/nvim-lspconfig',
+    "neovim/nvim-lspconfig",
     dependencies = {
-      { 'williamboman/mason.nvim', build = function() pcall(vim.cmd, 'MasonUpdate') end },
-      { 'williamboman/mason-lspconfig.nvim' },
-      { 'hrsh7th/nvim-cmp' },
-      { 'hrsh7th/cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-path' },
-      { 'L3MON4D3/LuaSnip' },
-      { 'saadparwaiz1/cmp_luasnip' },
-      { 'onsails/lspkind.nvim' },
-      { 'b0o/schemastore.nvim' },
+      {
+        "williamboman/mason.nvim",
+        build = function()
+          pcall(vim.cmd, "MasonUpdate")
+        end,
+      },
+      { "williamboman/mason-lspconfig.nvim" },
+      { "hrsh7th/nvim-cmp" },
+      { "hrsh7th/cmp-nvim-lsp" },
+      { "hrsh7th/cmp-path" },
+      { "L3MON4D3/LuaSnip" },
+      { "saadparwaiz1/cmp_luasnip" },
+      { "onsails/lspkind.nvim" },
+      { "b0o/schemastore.nvim" },
     },
   },
 
   -- Trouble - show diagnostics in a list over statusline
   {
-    'folke/trouble.nvim',
+    "folke/trouble.nvim",
     opts = {}, -- for default options, refer to the configuration section for custom setup.
     cmd = "Trouble",
   },
@@ -65,7 +71,7 @@ return {
   },
 
   -- Vim-fugitive - git features in vim
-  'tpope/vim-fugitive',
+  "tpope/vim-fugitive",
 
   -- Plugins in separate files
 

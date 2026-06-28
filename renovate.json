@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "packageRules": [
+    {
+      "description": "Automerge CI-validated updates: GitHub Actions + lint tool pins in workflows",
+      "matchFileNames": [".github/workflows/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "Installer pins run at 'just install' (not CI-tested); delta/zoxide/yazi also need a manual SHA256 refresh. Open a PR, never automerge.",
+      "matchFileNames": ["justfile"],
+      "automerge": false
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "CI tool versions pinned in workflow env: blocks (annotated with # renovate:)",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\w+_VERSION:\\s*[\"']?(?<currentValue>[^\"'\\s]+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Pinned tool versions in justfile (annotated with # renovate:)",
+      "managerFilePatterns": ["/(^|/)justfile$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\w+_version\\s*:=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
+    }
+  ]
+}
