@@ -2,18 +2,25 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":dependencyDashboard"
+    ":dependencyDashboard",
+    "schedule:weekly"
   ],
   "packageRules": [
     {
-      "description": "Automerge CI-validated updates: GitHub Actions + lint tool pins in workflows",
+      "description": "Group all CI deps (Actions + workflow tool pins) into one PR",
+      "matchFileNames": [".github/workflows/**"],
+      "groupName": "ci dependencies"
+    },
+    {
+      "description": "Automerge CI-validated updates (the group merges only if every member is automergeable)",
       "matchFileNames": [".github/workflows/**"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
     {
-      "description": "Installer pins run at 'just install' (not CI-tested); delta/zoxide/yazi also need a manual SHA256 refresh. Open a PR, never automerge.",
+      "description": "Installer pins run at 'just install' (not CI-tested); delta/zoxide/yazi/nerd-fonts also need a manual SHA256 refresh. One grouped PR, never automerge.",
       "matchFileNames": ["justfile"],
+      "groupName": "tooling (justfile)",
       "automerge": false
     }
   ],
