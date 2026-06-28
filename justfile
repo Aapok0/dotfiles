@@ -13,8 +13,8 @@ terminal := "ghostty"
 core_dirs := "bat gitconfig nvim starship tmux tmux-tools vim zsh lazygit yazi atuin"
 
 # ──── Pinned tool versions (kept current by Renovate; see renovate.json) ──────
-# Renovate bumps the version line on each release. delta/zoxide/yazi/nerd-fonts pin
-# a literal SHA256 that Renovate CANNOT refresh — its PR is left un-automerged;
+# Renovate bumps the version line on each release. delta/zoxide/yazi/nerd-fonts/taplo
+# pin a literal SHA256 that Renovate CANNOT refresh — its PR is left un-automerged;
 # regenerate the hash with:  curl -fsSL <download-url> | sha256sum
 # The other tools verify against an upstream checksums file, so no local hash.
 # Pinned release binaries are x86_64/amd64 (ruff/hadolint/tflint also do aarch64).
@@ -58,11 +58,20 @@ hadolint_version := "2.14.0"
 # renovate: datasource=github-releases depName=terraform-linters/tflint
 tflint_version := "0.63.1"
 
+# renovate: datasource=github-releases depName=tamasfe/taplo
+taplo_version := "0.10.0"
+taplo_sha256 := "8fe196b894ccf9072f98d4e1013a180306e17d244830b03986ee5e8eabeb6156"
+
+# renovate: datasource=github-releases depName=gitleaks/gitleaks
+gitleaks_version := "8.30.1"
+
 # renovate: datasource=github-releases depName=ryanoasis/nerd-fonts
 nerdfonts_version := "3.4.0"
 nerdfonts_jetbrainsmono_sha256 := "ef552a3e638f25125c6ad4c51176a6adcdce295ab1d2ffacf0db060caf8c1582"
 
-# ──── Stow ────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stow
+# ---------------------------------------------------------------------------
 
 # Stow/unstow/restow all dotfiles (uses default terminal, override with: just terminal=ghostty stow-all)
 stow-all:
@@ -124,7 +133,9 @@ _fetch url dest sha:
     curl -fsSL -o "{{dest}}" "{{url}}"
     echo "{{sha}}  {{dest}}" | sha256sum -c - >/dev/null
 
-# ──── macOS Setup ─────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# macOS Setup
+# ---------------------------------------------------------------------------
 
 brew-install:
     brew bundle --file=Brewfile
@@ -133,7 +144,9 @@ brew-install:
 brew-check:
     brew bundle check --file=Brewfile --verbose
 
-# ──── Linux Setup ─────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Linux Setup
+# ---------------------------------------------------------------------------
 
 # Install core dependencies
 # Debian (packages not in default repos are installed via alternative methods)
@@ -363,7 +376,9 @@ tfswitch-install:
     rm -rf "$tmp"
     echo "  ✓ tfswitch {{tfswitch_version}} installed to ~/.local/bin/tfswitch"
 
-# ──── Utilities ───────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Utilities
+# ---------------------------------------------------------------------------
 
 # Clone ZSH plugins and tools
 zsh-plugins:
@@ -650,6 +665,60 @@ nvim-tools:
         fi
     fi
 
+    # luacheck — Lua linter (CI uses it). In Arch repos; elsewhere via luarocks.
+    if ! have luacheck; then
+        echo "  → installing luacheck"
+        if have pacman; then
+            sudo pacman -S --needed --noconfirm luacheck
+        elif have dnf; then
+            sudo dnf install -y luarocks lua-devel && sudo luarocks install luacheck \
+                || echo "  ⚠ install luacheck manually: sudo luarocks install luacheck"
+        elif have apt-get; then
+            sudo apt-get install -y lua5.4 liblua5.4-dev luarocks && sudo luarocks install luacheck \
+                || echo "  ⚠ install luacheck manually: sudo luarocks install luacheck"
+        fi
+    fi
+
+    # taplo — TOML linter/formatter. Pinned binary (gzip of the raw executable);
+    # no upstream checksum, so the SHA256 is pinned locally (x86_64 only).
+    if ! have taplo; then
+        if [[ "$(uname -m)" == "x86_64" ]]; then
+            echo "  → installing taplo {{taplo_version}} (pinned binary)"
+            tmp="$(mktemp -d)"
+            just _fetch \
+                "https://github.com/tamasfe/taplo/releases/download/{{taplo_version}}/taplo-linux-x86_64.gz" \
+                "$tmp/taplo.gz" "{{taplo_sha256}}"
+            gunzip -f "$tmp/taplo.gz"
+            install -m 755 "$tmp/taplo" "$HOME/.local/bin/taplo"
+            rm -rf "$tmp"
+        else
+            echo "  ⚠ taplo pinned binary is x86_64 only; skipping on $(uname -m)"
+        fi
+    fi
+
+    # gitleaks — secret scanner (CI uses it). Pinned binary, verified against
+    # the upstream checksums file.
+    if ! have gitleaks; then
+        case "$(uname -m)" in
+            x86_64) gl_arch="x64" ;;
+            aarch64 | arm64) gl_arch="arm64" ;;
+            *) gl_arch="" ;;
+        esac
+        if [[ -n "$gl_arch" ]]; then
+            echo "  → installing gitleaks {{gitleaks_version}} (pinned binary)"
+            tmp="$(mktemp -d)"
+            asset="gitleaks_{{gitleaks_version}}_linux_${gl_arch}.tar.gz"
+            base="https://github.com/gitleaks/gitleaks/releases/download/v{{gitleaks_version}}"
+            sha="$(curl -fsSL "$base/gitleaks_{{gitleaks_version}}_checksums.txt" | awk -v a="$asset" '$2 == a {print $1}')"
+            just _fetch "$base/$asset" "$tmp/gitleaks.tar.gz" "$sha"
+            tar xf "$tmp/gitleaks.tar.gz" -C "$tmp" gitleaks
+            install -m 755 "$tmp/gitleaks" "$HOME/.local/bin/gitleaks"
+            rm -rf "$tmp"
+        else
+            echo "  ⚠ unsupported arch for gitleaks: $(uname -m)"
+        fi
+    fi
+
     echo "  ✓ nvim linters/formatters installed"
 
 # Set default shell to zsh (no-op if already zsh)
@@ -702,7 +771,9 @@ check:
         exit 1
     fi
 
-# ──── Full Install ────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Full Install
+# ---------------------------------------------------------------------------
 
 # Full environment setup: install packages, stow configs, clone plugins, change default shell, and verify installation
 install:
