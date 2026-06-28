@@ -3,10 +3,10 @@ set -euo pipefail
 
 # Check dependencies
 for cmd in tmux zoxide; do
-  if ! command -v "$cmd" &>/dev/null; then
-    echo "Error: '$cmd' is not installed." >&2
-    exit 1
-  fi
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "Error: '$cmd' is not installed." >&2
+        exit 1
+    fi
 done
 
 # Exit with message, if no variable is given
@@ -16,7 +16,7 @@ if [ -z "$1" ]; then
 fi
 
 # Query directory path, save directory name and check if session with that name exists
-zoxide_result_path="$( zoxide query "$1" )"
+zoxide_result_path="$(zoxide query "$1")"
 
 # If zoxide query can't find a directory or gets any other error, script exits
 if [ -z "$zoxide_result_path" ]; then
@@ -24,8 +24,8 @@ if [ -z "$zoxide_result_path" ]; then
 fi
 
 # Save directory name and check if session with that name exists
-zoxide_result="$( echo "${zoxide_result_path}" | awk -F / '{print $NF}' )"
-session_exists="$( tmux ls -F \#S | grep -x "${zoxide_result}" )"
+zoxide_result="$(echo "${zoxide_result_path}" | awk -F / '{print $NF}')"
+session_exists="$(tmux ls -F \#S | grep -x "${zoxide_result}")"
 
 # Tmux doesn't allow session names with dot in the beginning.
 # If trying to get to dot directory, replace dot with underscore.

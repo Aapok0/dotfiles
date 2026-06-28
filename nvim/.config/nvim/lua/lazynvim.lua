@@ -13,9 +13,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Plugins and their configs
-require("lazy").setup('plugins')
+require("lazy").setup("plugins")
 require("telescope-setup")
 require("lsp")
 
 -- Catppuccin setup must be called before loading
-vim.cmd.colorscheme "catppuccin"
+vim.cmd.colorscheme("catppuccin")

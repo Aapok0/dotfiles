@@ -41,14 +41,7 @@ secrets_filter = true
 store_failed = true
 
 # History filter — ignore short/useless commands
-history_filter = [
-  "^cd$",
-  "^ls$",
-  "^ll$",
-  "^exit$",
-  "^clear$",
-  "^pwd$",
-]
+history_filter = ["^cd$", "^ls$", "^ll$", "^exit$", "^clear$", "^pwd$"]
 
 [preview]
 strategy = "auto"

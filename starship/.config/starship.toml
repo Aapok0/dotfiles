@@ -45,15 +45,15 @@ palette = 'dusk'
 [palettes.dusk]
 color_parchment = '#ddd9d0'  # text
 color_deep_dusk = '#282838'  # time bg
-color_muted_dusk = '#3e3e54'  # cloud/infra bg
-color_twilight = '#607a9a'  # languages bg
-color_sage = '#609880'  # git bg
+color_muted_dusk = '#3e3e54' # cloud/infra bg
+color_twilight = '#607a9a'   # languages bg
+color_sage = '#609880'       # git bg
 color_soft_sage = '#88a888'  # success prompt
-color_slate = '#4a5468'  # username/OS bg
-color_wisteria = '#b49ec4'  # vim modes
-color_dusty_rose = '#bf7a7a'  # errors/root
-color_amber = '#a88a68'  # directory bg
-color_steel = '#8098b0'  # cloud text
+color_slate = '#4a5468'      # username/OS bg
+color_wisteria = '#b49ec4'   # vim modes
+color_dusty_rose = '#bf7a7a' # errors/root
+color_amber = '#a88a68'      # directory bg
+color_steel = '#8098b0'      # cloud text
 
 [os]
 disabled = false

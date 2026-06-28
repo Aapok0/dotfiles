@@ -5,42 +5,42 @@ vim.diagnostic.config({
   virtual_text = false,
   signs = {
     text = {
-      [vim.diagnostic.severity.ERROR] = '✘',
-      [vim.diagnostic.severity.WARN] = '▲',
-      [vim.diagnostic.severity.HINT] = '⚑',
-      [vim.diagnostic.severity.INFO] = '»',
+      [vim.diagnostic.severity.ERROR] = "✘",
+      [vim.diagnostic.severity.WARN] = "▲",
+      [vim.diagnostic.severity.HINT] = "⚑",
+      [vim.diagnostic.severity.INFO] = "»",
     },
   },
 })
 
 -- Mason setup for automatic LSP server installation
-require('mason').setup({})
-require('mason-lspconfig').setup({
+require("mason").setup({})
+require("mason-lspconfig").setup({
   ensure_installed = {
-    'ansiblels',
-    'bashls',
-    'dockerls',
-    'docker_compose_language_service',
-    'eslint',
-    'helm_ls',
-    'jsonls',
-    'lua_ls',
-    'pyright',
-    'terraformls',
-    'yamlls',
+    "ansiblels",
+    "bashls",
+    "dockerls",
+    "docker_compose_language_service",
+    "eslint",
+    "helm_ls",
+    "jsonls",
+    "lua_ls",
+    "pyright",
+    "terraformls",
+    "yamlls",
   },
   handlers = {
     -- Default handler for all servers
     function(server_name)
-      require('lspconfig')[server_name].setup({})
+      require("lspconfig")[server_name].setup({})
     end,
 
     -- Lua LSP with Neovim runtime support
     lua_ls = function()
-      require('lspconfig').lua_ls.setup({
+      require("lspconfig").lua_ls.setup({
         settings = {
           Lua = {
-            runtime = { version = 'LuaJIT' },
+            runtime = { version = "LuaJIT" },
             workspace = {
               checkThirdParty = false,
               library = { vim.env.VIMRUNTIME },
@@ -52,7 +52,7 @@ require('mason-lspconfig').setup({
 
     -- YAML LSP with schema support (Kubernetes, GitHub Actions, etc.)
     yamlls = function()
-      require('lspconfig').yamlls.setup({
+      require("lspconfig").yamlls.setup({
         settings = {
           yaml = {
             schemaStore = {
@@ -66,21 +66,21 @@ require('mason-lspconfig').setup({
 
     -- JSON LSP with schema support
     jsonls = function()
-      require('lspconfig').jsonls.setup({
+      require("lspconfig").jsonls.setup({
         settings = {
           json = {
-            schemas = require('schemastore').json.schemas(),
+            schemas = require("schemastore").json.schemas(),
             validate = { enable = true },
           },
         },
       })
     end,
-  }
+  },
 })
 
 -- Completion setup
-local cmp = require('cmp')
-local lspkind = require('lspkind')
+local cmp = require("cmp")
+local lspkind = require("lspkind")
 
 cmp.setup({
   sources = {
@@ -118,17 +118,17 @@ cmp.setup({
         Event = "",
         Operator = "󰆕",
         TypeParameter = "",
-      }
-    })
+      },
+    }),
   },
   mapping = cmp.mapping.preset.insert({
     -- scroll up and down the documentation window
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-d>"] = cmp.mapping.scroll_docs(4),
   }),
   snippet = {
     expand = function(args)
-      require('luasnip').lsp_expand(args.body)
+      require("luasnip").lsp_expand(args.body)
     end,
   },
 })

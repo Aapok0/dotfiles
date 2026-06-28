@@ -1,0 +1,7 @@
+# Normalize line endings so stylua/shfmt checks stay deterministic across OSes.
+* text=auto eol=lf
+
+*.lua  text eol=lf
+*.sh   text eol=lf
+*.zsh  text eol=lf
+*.toml text eol=lf

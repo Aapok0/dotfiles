@@ -38,16 +38,16 @@ return {
       color_overrides = {},
       custom_highlights = {},
       integrations = {
-          cmp = true,
-          gitsigns = true,
-          nvimtree = true,
-          treesitter = true,
-          which_key = true,
-          mason = true,
-          fidget = true,
-          notify = false,
-          mini = false,
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+        which_key = true,
+        mason = true,
+        fidget = true,
+        notify = false,
+        mini = false,
       },
     })
-  end
+  end,
 }
