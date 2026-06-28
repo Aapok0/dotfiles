@@ -38,7 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Install luacheck
-        run: sudo apt-get update && sudo apt-get install -y luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.4 liblua5.4-dev luarocks
+          sudo luarocks install luacheck
       - name: Run luacheck
         run: luacheck nvim wezterm
 
