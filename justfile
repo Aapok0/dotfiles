@@ -32,7 +32,7 @@ yazi_version := "26.5.6"
 yazi_sha256 := "1c9096f0a83b8102c194385f644cdeff93cc8269426163c9d033041ebd537bd2"
 
 # renovate: datasource=github-releases depName=starship/starship
-starship_version := "1.25.1"
+starship_version := "1.26.0"
 
 # renovate: datasource=github-releases depName=atuinsh/atuin
 atuin_version := "18.16.1"
