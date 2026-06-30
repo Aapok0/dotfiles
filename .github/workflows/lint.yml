@@ -54,6 +54,7 @@ jobs:
       FILES: >-
         gitconfig/alias.sh
         ghostty/bin/ghostty-launch
+        scripts/justlib.sh
         tmux-tools/usr/local/bin/tmuxf
         tmux-tools/usr/local/bin/tmuxz
     steps:

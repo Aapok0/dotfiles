@@ -69,6 +69,26 @@ gitleaks_version := "8.30.1"
 nerdfonts_version := "3.4.0"
 nerdfonts_jetbrainsmono_sha256 := "ef552a3e638f25125c6ad4c51176a6adcdce295ab1d2ffacf0db060caf8c1582"
 
+# ──── Pinned git dependencies (zsh plugins, tmux/fzf tooling) ─────────────────
+# Cloned + checked out at the ref below; a Renovate bump re-syncs (see git_sync
+# in scripts/justlib.sh). Tagged where upstream tags releases; fzf-git.sh has no
+# tags, so it is pinned to a commit (datasource=git-refs).
+
+# renovate: datasource=github-tags depName=tmux-plugins/tpm
+tpm_version := "v3.1.0"
+
+# renovate: datasource=github-tags depName=zdharma-continuum/fast-syntax-highlighting
+fast_syntax_highlighting_version := "v1.56"
+
+# renovate: datasource=github-tags depName=zsh-users/zsh-autosuggestions
+zsh_autosuggestions_version := "v0.7.1"
+
+# renovate: datasource=github-tags depName=zsh-users/zsh-completions
+zsh_completions_version := "0.36.0"
+
+# renovate: datasource=git-refs depName=junegunn/fzf-git.sh
+fzf_git_sh_commit := "d76cd4df21f2ca5aafeab8b31118c4df133472c0"
+
 # ---------------------------------------------------------------------------
 # Stow
 # ---------------------------------------------------------------------------
@@ -126,13 +146,6 @@ stow name:
 unstow name:
     stow -v -D --target="$HOME" {{name}}
 
-# Download {{url}} to {{dest}} and verify its SHA256 (internal helper for pinned installers)
-_fetch url dest sha:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    curl -fsSL -o "{{dest}}" "{{url}}"
-    echo "{{sha}}  {{dest}}" | sha256sum -c - >/dev/null
-
 # ---------------------------------------------------------------------------
 # macOS Setup
 # ---------------------------------------------------------------------------
@@ -153,6 +166,7 @@ brew-check:
 apt-install:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
     sudo apt-get update
     sudo apt-get install -y \
         neovim tmux zsh git stow curl cargo \
@@ -172,75 +186,43 @@ apt-install:
         sudo apt-get update && sudo apt-get install -y eza
     fi
 
-    if ! command -v delta &>/dev/null; then
+    if bin_needs_update delta delta "{{delta_version}}"; then
         arch="$(dpkg --print-architecture)"
         if [[ "$arch" != "amd64" ]]; then
             echo "Pinned git-delta is amd64-only (got $arch); install manually: https://github.com/dandavison/delta/releases"
             exit 1
         fi
-        just _fetch \
-            "https://github.com/dandavison/delta/releases/download/{{delta_version}}/git-delta_{{delta_version}}_amd64.deb" \
-            /tmp/git-delta.deb "{{delta_sha256}}"
-        sudo dpkg -i /tmp/git-delta.deb || sudo apt-get install -f -y
-        rm -f /tmp/git-delta.deb
     fi
+    install_release delta "{{delta_version}}" /usr/local/bin/delta \
+        "https://github.com/dandavison/delta/releases/download/{{delta_version}}/git-delta_{{delta_version}}_amd64.deb" \
+        "{{delta_sha256}}" deb
 
-    if ! command -v zoxide &>/dev/null; then
-        tmp="$(mktemp -d)"
-        just _fetch \
-            "https://github.com/ajeetdsouza/zoxide/releases/download/v{{zoxide_version}}/zoxide-{{zoxide_version}}-x86_64-unknown-linux-musl.tar.gz" \
-            "$tmp/zoxide.tar.gz" "{{zoxide_sha256}}"
-        tar xf "$tmp/zoxide.tar.gz" -C "$tmp" zoxide
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$tmp/zoxide" "$HOME/.local/bin/zoxide"
-        rm -rf "$tmp"
-    fi
+    install_release zoxide "{{zoxide_version}}" "$HOME/.local/bin/zoxide" \
+        "https://github.com/ajeetdsouza/zoxide/releases/download/v{{zoxide_version}}/zoxide-{{zoxide_version}}-x86_64-unknown-linux-musl.tar.gz" \
+        "{{zoxide_sha256}}" tar
 
-    if ! command -v starship &>/dev/null; then
-        tmp="$(mktemp -d)"
+    if bin_needs_update starship starship "{{starship_version}}"; then
         url="https://github.com/starship/starship/releases/download/v{{starship_version}}/starship-x86_64-unknown-linux-gnu.tar.gz"
-        sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-        just _fetch "$url" "$tmp/starship.tar.gz" "$sha"
-        tar xf "$tmp/starship.tar.gz" -C "$tmp" starship
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$tmp/starship" "$HOME/.local/bin/starship"
-        rm -rf "$tmp"
+        install_release starship "{{starship_version}}" "$HOME/.local/bin/starship" \
+            "$url" "$(gh_sha_sidecar "$url")" tar
     fi
 
-    if ! command -v atuin &>/dev/null; then
-        tmp="$(mktemp -d)"
+    if bin_needs_update atuin atuin "{{atuin_version}}"; then
         url="https://github.com/atuinsh/atuin/releases/download/v{{atuin_version}}/atuin-x86_64-unknown-linux-gnu.tar.gz"
-        sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-        just _fetch "$url" "$tmp/atuin.tar.gz" "$sha"
-        tar xf "$tmp/atuin.tar.gz" -C "$tmp"
-        bin="$(find "$tmp" -type f -name atuin | head -1)"
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$bin" "$HOME/.local/bin/atuin"
-        rm -rf "$tmp"
+        install_release atuin "{{atuin_version}}" "$HOME/.local/bin/atuin" \
+            "$url" "$(gh_sha_sidecar "$url")" tar
     fi
 
-    if ! command -v lazygit &>/dev/null; then
-        tmp="$(mktemp -d)"
+    if bin_needs_update lazygit lazygit "{{lazygit_version}}"; then
         asset="lazygit_{{lazygit_version}}_linux_x86_64.tar.gz"
         base="https://github.com/jesseduffield/lazygit/releases/download/v{{lazygit_version}}"
-        sha="$(curl -fsSL "$base/checksums.txt" | awk -v a="$asset" '$2==a {print $1}')"
-        just _fetch "$base/$asset" "$tmp/lazygit.tar.gz" "$sha"
-        tar xf "$tmp/lazygit.tar.gz" -C "$tmp" lazygit
-        sudo install "$tmp/lazygit" /usr/local/bin/lazygit
-        rm -rf "$tmp"
+        install_release lazygit "{{lazygit_version}}" /usr/local/bin/lazygit \
+            "$base/$asset" "$(gh_sha_checksums "$base" "$asset")" tar
     fi
 
-    if ! command -v yazi &>/dev/null && ! command -v ya &>/dev/null; then
-        tmp="$(mktemp -d)"
-        just _fetch \
-            "https://github.com/sxyazi/yazi/releases/download/v{{yazi_version}}/yazi-x86_64-unknown-linux-gnu.zip" \
-            "$tmp/yazi.zip" "{{yazi_sha256}}"
-        unzip -q "$tmp/yazi.zip" -d "$tmp/extract"
-        arch_dir="$(find "$tmp/extract" -mindepth 1 -maxdepth 1 -type d | head -1)"
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$arch_dir/yazi" "$arch_dir/ya" "$HOME/.local/bin/"
-        rm -rf "$tmp"
-    fi
+    install_release yazi "{{yazi_version}}" "$HOME/.local/bin/yazi" \
+        "https://github.com/sxyazi/yazi/releases/download/v{{yazi_version}}/yazi-x86_64-unknown-linux-gnu.zip" \
+        "{{yazi_sha256}}" zip "yazi ya"
 
     if ! command -v gh &>/dev/null; then
         if [[ ! -f /etc/apt/sources.list.d/github-cli.list ]]; then
@@ -258,6 +240,8 @@ apt-install:
         cargo install procs 2>/dev/null || echo "Install procs: cargo install procs (requires cargo)"
     fi
 
+    just lint-tools
+
 # Arch (official repos)
 pacman-install:
     sudo pacman -S --needed \
@@ -268,11 +252,13 @@ pacman-install:
         lazygit yazi btop entr xclip wl-clipboard jq github-cli \
         ffmpeg p7zip poppler imagemagick \
         ansible kubectl helm
+    just lint-tools
 
 # Fedora — one package per dnf install (already-installed RPMs must not be batched)
 dnf-install:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
 
     dnf_install() {
         local pkg=$1
@@ -309,29 +295,16 @@ dnf-install:
         cargo install du-dust 2>/dev/null || echo "Install dust: cargo install du-dust (requires cargo)"
     fi
 
-    if ! command -v starship &>/dev/null; then
-        echo "  → installing starship (pinned binary)"
-        tmp=$(mktemp -d)
+    if bin_needs_update starship starship "{{starship_version}}"; then
         url="https://github.com/starship/starship/releases/download/v{{starship_version}}/starship-x86_64-unknown-linux-gnu.tar.gz"
-        sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-        just _fetch "$url" "$tmp/starship.tar.gz" "$sha"
-        tar xf "$tmp/starship.tar.gz" -C "$tmp" starship
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$tmp/starship" "$HOME/.local/bin/starship"
-        rm -rf "$tmp"
+        install_release starship "{{starship_version}}" "$HOME/.local/bin/starship" \
+            "$url" "$(gh_sha_sidecar "$url")" tar
     fi
 
-    if ! command -v atuin &>/dev/null; then
-        echo "  → installing atuin (pinned binary)"
-        tmp=$(mktemp -d)
+    if bin_needs_update atuin atuin "{{atuin_version}}"; then
         url="https://github.com/atuinsh/atuin/releases/download/v{{atuin_version}}/atuin-x86_64-unknown-linux-gnu.tar.gz"
-        sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-        just _fetch "$url" "$tmp/atuin.tar.gz" "$sha"
-        tar xf "$tmp/atuin.tar.gz" -C "$tmp"
-        bin="$(find "$tmp" -type f -name atuin | head -1)"
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$bin" "$HOME/.local/bin/atuin"
-        rm -rf "$tmp"
+        install_release atuin "{{atuin_version}}" "$HOME/.local/bin/atuin" \
+            "$url" "$(gh_sha_sidecar "$url")" tar
     fi
     [[ -d "$HOME/.atuin/bin" ]] && export PATH="$HOME/.atuin/bin:$PATH"
 
@@ -342,70 +315,48 @@ dnf-install:
         dnf_install lazygit
     fi
 
-    if ! command -v yazi &>/dev/null && ! command -v ya &>/dev/null; then
-        echo "  → installing yazi (pinned binary)"
-        tmp=$(mktemp -d)
-        just _fetch \
-            "https://github.com/sxyazi/yazi/releases/download/v{{yazi_version}}/yazi-x86_64-unknown-linux-gnu.zip" \
-            "$tmp/yazi.zip" "{{yazi_sha256}}"
-        unzip -q "$tmp/yazi.zip" -d "$tmp/extract"
-        arch_dir=$(find "$tmp/extract" -mindepth 1 -maxdepth 1 -type d | head -1)
-        mkdir -p "$HOME/.local/bin"
-        install -m 755 "$arch_dir/yazi" "$arch_dir/ya" "$HOME/.local/bin/"
-        rm -rf "$tmp"
-        echo "  ✓ yazi installed to ~/.local/bin"
-    fi
+    install_release yazi "{{yazi_version}}" "$HOME/.local/bin/yazi" \
+        "https://github.com/sxyazi/yazi/releases/download/v{{yazi_version}}/yazi-x86_64-unknown-linux-gnu.zip" \
+        "{{yazi_sha256}}" zip "yazi ya"
     export PATH="$HOME/.local/bin:$PATH"
+
+    just lint-tools
 
 # Install tfswitch (Terraform version manager; replaces distro terraform package)
 tfswitch-install:
     #!/usr/bin/env bash
     set -euo pipefail
-    if command -v tfswitch &>/dev/null; then
-        echo "  ✓ tfswitch already installed"
-        exit 0
+    source scripts/justlib.sh
+    if bin_needs_update tfswitch tfswitch "{{tfswitch_version}}"; then
+        asset="terraform-switcher_v{{tfswitch_version}}_linux_amd64.tar.gz"
+        base="https://github.com/warrensbox/terraform-switcher/releases/download/v{{tfswitch_version}}"
+        sha="$(gh_sha_checksums "$base" "$asset" "terraform-switcher_v{{tfswitch_version}}_checksums.txt")"
+        install_release tfswitch "{{tfswitch_version}}" "$HOME/.local/bin/tfswitch" \
+            "$base/$asset" "$sha" tar
+    else
+        echo "  ✓ tfswitch {{tfswitch_version}} (up to date)"
     fi
-    tmp="$(mktemp -d)"
-    asset="terraform-switcher_v{{tfswitch_version}}_linux_amd64.tar.gz"
-    base="https://github.com/warrensbox/terraform-switcher/releases/download/v{{tfswitch_version}}"
-    sha="$(curl -fsSL "$base/terraform-switcher_v{{tfswitch_version}}_checksums.txt" | awk -v a="$asset" '$2==a {print $1}')"
-    just _fetch "$base/$asset" "$tmp/tfswitch.tar.gz" "$sha"
-    tar xf "$tmp/tfswitch.tar.gz" -C "$tmp" tfswitch
-    mkdir -p "$HOME/.local/bin"
-    install -m 755 "$tmp/tfswitch" "$HOME/.local/bin/tfswitch"
-    rm -rf "$tmp"
-    echo "  ✓ tfswitch {{tfswitch_version}} installed to ~/.local/bin/tfswitch"
 
 # ---------------------------------------------------------------------------
 # Utilities
 # ---------------------------------------------------------------------------
 
-# Clone ZSH plugins and tools
+# Clone/sync ZSH plugins and tools at their pinned refs (Renovate-tracked)
 zsh-plugins:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
     plugins_dir="$HOME/.config/zsh/plugins"
     tools_dir="$HOME/.config/zsh/tools"
     mkdir -p "$plugins_dir" "$tools_dir"
-    declare -A plugins=(
-        [fast-syntax-highlighting]="https://github.com/zdharma-continuum/fast-syntax-highlighting.git"
-        [zsh-autosuggestions]="https://github.com/zsh-users/zsh-autosuggestions.git"
-        [zsh-completions]="https://github.com/zsh-users/zsh-completions.git"
-    )
-    for name in "${!plugins[@]}"; do
-        if [[ -d "$plugins_dir/$name/.git" ]]; then
-            echo "  ✓ $name (already cloned)"
-        else
-            echo "  → cloning $name"
-            git clone "${plugins[$name]}" "$plugins_dir/$name"
-        fi
-    done
-    if [[ -d "$tools_dir/fzf-git.sh/.git" ]]; then
-        echo "  ✓ fzf-git.sh (already cloned)"
-    else
-        echo "  → cloning fzf-git.sh"
-        git clone "https://github.com/junegunn/fzf-git.sh.git" "$tools_dir/fzf-git.sh"
-    fi
+    git_sync fast-syntax-highlighting "$plugins_dir/fast-syntax-highlighting" \
+        "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" "{{fast_syntax_highlighting_version}}"
+    git_sync zsh-autosuggestions "$plugins_dir/zsh-autosuggestions" \
+        "https://github.com/zsh-users/zsh-autosuggestions.git" "{{zsh_autosuggestions_version}}"
+    git_sync zsh-completions "$plugins_dir/zsh-completions" \
+        "https://github.com/zsh-users/zsh-completions.git" "{{zsh_completions_version}}"
+    git_sync fzf-git.sh "$tools_dir/fzf-git.sh" \
+        "https://github.com/junegunn/fzf-git.sh.git" "{{fzf_git_sh_commit}}"
 
 # Clone personal shell tools (https://github.com/Aapok0/tools)
 tools-clone:
@@ -423,17 +374,13 @@ tools-clone:
     chmod +x "$tools_dir"/*
     echo "  ✓ tools ready at $tools_dir (on PATH via zsh config)"
 
-# Clone TPM (tmux plugin manager)
+# Clone/sync TPM (tmux plugin manager) at its pinned tag (Renovate-tracked)
 tpm-install:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
     tpm_dir="$HOME/.config/tmux/plugins/tpm"
-    if [[ -d "$tpm_dir/.git" ]]; then
-        echo "  ✓ TPM already installed"
-    else
-        echo "  → cloning TPM"
-        git clone "https://github.com/tmux-plugins/tpm.git" "$tpm_dir"
-    fi
+    git_sync tpm "$tpm_dir" "https://github.com/tmux-plugins/tpm.git" "{{tpm_version}}"
     if [[ -x "$tpm_dir/bin/install_plugins" ]]; then
         echo "  → installing tmux plugins"
         "$tpm_dir/bin/install_plugins"
@@ -444,6 +391,7 @@ tpm-install:
 font-install:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
     os="$(uname -s)"
     if [[ "$os" == "Darwin" ]]; then
         echo "  ℹ Font installed via Brewfile (font-jetbrains-mono-nerd-font)"
@@ -459,16 +407,18 @@ font-install:
             fi
         elif command -v apt-get &>/dev/null; then
             mkdir -p "$HOME/.local/share/fonts"
-            if fc-list | grep -qi "JetBrainsMono.*Nerd"; then
-                echo "  ✓ JetBrainsMono Nerd Font already installed"
+            if [[ "$(marker_get nerdfonts)" == "{{nerdfonts_version}}" ]] && fc-list | grep -qi "JetBrainsMono.*Nerd"; then
+                echo "  ✓ JetBrainsMono Nerd Font {{nerdfonts_version}} (up to date)"
             else
                 echo "  → Downloading JetBrainsMono Nerd Font {{nerdfonts_version}}..."
-                just _fetch \
+                tmp="$(mktemp -d)"
+                dl_verify \
                     "https://github.com/ryanoasis/nerd-fonts/releases/download/v{{nerdfonts_version}}/JetBrainsMono.tar.xz" \
-                    /tmp/JetBrainsMono.tar.xz "{{nerdfonts_jetbrainsmono_sha256}}"
-                tar xf /tmp/JetBrainsMono.tar.xz -C "$HOME/.local/share/fonts/"
-                rm /tmp/JetBrainsMono.tar.xz
+                    "$tmp/JetBrainsMono.tar.xz" "{{nerdfonts_jetbrainsmono_sha256}}"
+                tar xf "$tmp/JetBrainsMono.tar.xz" -C "$HOME/.local/share/fonts/"
+                rm -rf "$tmp"
                 fc-cache -fv
+                marker_set nerdfonts "{{nerdfonts_version}}"
                 echo "  ✓ JetBrainsMono Nerd Font installed"
             fi
         else
@@ -554,10 +504,12 @@ nvim-plugins:
 # conform/nvim-lint resolve binaries from $PATH, so a system install covers nvim too.
 # Distro repos first, official installers/cargo/npm fallback; macOS: see Brewfile.
 
-# Install nvim linters/formatters system-wide (shared by shell + nvim)
-nvim-tools:
+# Install linters/formatters system-wide (shared by shell + nvim + CI parity).
+# Folded into the distro *-install recipes, so a single `just <distro>-install` covers it.
+lint-tools:
     #!/usr/bin/env bash
     set -euo pipefail
+    source scripts/justlib.sh
     os="$(uname -s)"
     if [[ "$os" == "Darwin" ]]; then
         echo "  ℹ macOS: installed via Brewfile (just brew-install)"
@@ -567,11 +519,13 @@ nvim-tools:
     have() { command -v "$1" &>/dev/null; }
     mkdir -p "$HOME/.local/bin"
 
-    # Tools available in distro repos: shellcheck, shfmt, ruff, ansible-lint
+    # Tools available in distro repos: shellcheck, shfmt, ansible-lint.
+    # ruff is intentionally NOT installed here — it's pinned below to ~/.local/bin
+    # as the single Renovate-tracked source on every distro.
     if have pacman; then
-        sudo pacman -S --needed --noconfirm shellcheck shfmt ruff ansible-lint
+        sudo pacman -S --needed --noconfirm shellcheck shfmt ansible-lint
     elif have dnf; then
-        for pkg in ShellCheck shfmt ruff ansible-lint; do
+        for pkg in ShellCheck shfmt ansible-lint; do
             if rpm -q "$pkg" &>/dev/null; then
                 echo "  ✓ $pkg (already installed)"
             else
@@ -584,22 +538,18 @@ nvim-tools:
         sudo apt-get install -y shellcheck shfmt ansible-lint
     fi
 
-    # ruff — pinned prebuilt binary (verified against upstream .sha256) when not in repos
-    if ! have ruff; then
+    # ruff — pinned prebuilt binary (verified against upstream .sha256); the single
+    # source on all distros, installed to ~/.local/bin so Renovate controls the version.
+    if bin_needs_update ruff ruff "{{ruff_version}}"; then
         case "$(uname -m)" in
             x86_64) ruff_arch="x86_64-unknown-linux-gnu" ;;
-            aarch64|arm64) ruff_arch="aarch64-unknown-linux-gnu" ;;
+            aarch64 | arm64) ruff_arch="aarch64-unknown-linux-gnu" ;;
             *) ruff_arch="" ;;
         esac
         if [[ -n "$ruff_arch" ]]; then
-            echo "  → installing ruff {{ruff_version}} (pinned binary)"
-            tmp="$(mktemp -d)"
             url="https://github.com/astral-sh/ruff/releases/download/{{ruff_version}}/ruff-${ruff_arch}.tar.gz"
-            sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-            just _fetch "$url" "$tmp/ruff.tar.gz" "$sha"
-            tar xf "$tmp/ruff.tar.gz" -C "$tmp"
-            install -m 755 "$(find "$tmp" -type f -name ruff | head -1)" "$HOME/.local/bin/ruff"
-            rm -rf "$tmp"
+            install_release ruff "{{ruff_version}}" "$HOME/.local/bin/ruff" \
+                "$url" "$(gh_sha_sidecar "$url")" tar
         else
             echo "  ⚠ unsupported arch for ruff: $(uname -m)"
         fi
@@ -612,54 +562,53 @@ nvim-tools:
     fi
 
     # stylua — not packaged; build via cargo at the pinned version (official method)
-    if ! have stylua; then
+    if bin_needs_update stylua stylua "{{stylua_version}}"; then
         echo "  → installing stylua {{stylua_version}} (cargo)"
-        cargo install stylua --locked --version {{stylua_version}} 2>/dev/null \
-            || echo "  ⚠ install stylua manually: cargo install stylua --version {{stylua_version}} (needs cargo)"
+        if cargo install stylua --locked --version {{stylua_version}}; then
+            marker_set stylua "{{stylua_version}}"
+        else
+            echo "  ⚠ install stylua manually: cargo install stylua --version {{stylua_version}} (needs cargo)"
+        fi
     fi
 
     # prettier — official method is npm global install (pinned)
-    if ! have prettier; then
+    if bin_needs_update prettier prettier "{{prettier_version}}"; then
         echo "  → installing prettier {{prettier_version}} (npm)"
-        npm install -g "prettier@{{prettier_version}}" 2>/dev/null \
-            || echo "  ⚠ install prettier manually: npm install -g prettier@{{prettier_version}} (needs npm)"
+        if npm install -g "prettier@{{prettier_version}}"; then
+            marker_set prettier "{{prettier_version}}"
+        else
+            echo "  ⚠ install prettier manually: npm install -g prettier@{{prettier_version}} (needs npm)"
+        fi
     fi
 
     # hadolint — pinned prebuilt binary, verified against upstream .sha256
-    if ! have hadolint; then
+    if bin_needs_update hadolint hadolint "{{hadolint_version}}"; then
         case "$(uname -m)" in
             x86_64) hl_arch="x86_64" ;;
-            aarch64|arm64) hl_arch="arm64" ;;
+            aarch64 | arm64) hl_arch="arm64" ;;
             *) hl_arch="" ;;
         esac
         if [[ -n "$hl_arch" ]]; then
-            echo "  → installing hadolint {{hadolint_version}} (pinned binary)"
             url="https://github.com/hadolint/hadolint/releases/download/v{{hadolint_version}}/hadolint-linux-${hl_arch}"
-            sha="$(curl -fsSL "$url.sha256" | awk '{print $1}')"
-            just _fetch "$url" "$HOME/.local/bin/hadolint" "$sha"
-            chmod +x "$HOME/.local/bin/hadolint"
+            install_release hadolint "{{hadolint_version}}" "$HOME/.local/bin/hadolint" \
+                "$url" "$(gh_sha_sidecar "$url")" raw
         else
             echo "  ⚠ unsupported arch for hadolint: $(uname -m)"
         fi
     fi
 
     # tflint — pinned prebuilt binary, verified against upstream checksums.txt
-    if ! have tflint; then
+    if bin_needs_update tflint tflint "{{tflint_version}}"; then
         case "$(uname -m)" in
             x86_64) tf_arch="amd64" ;;
-            aarch64|arm64) tf_arch="arm64" ;;
+            aarch64 | arm64) tf_arch="arm64" ;;
             *) tf_arch="" ;;
         esac
         if [[ -n "$tf_arch" ]]; then
-            echo "  → installing tflint {{tflint_version}} (pinned binary)"
-            tmp="$(mktemp -d)"
             asset="tflint_linux_${tf_arch}.zip"
             base="https://github.com/terraform-linters/tflint/releases/download/v{{tflint_version}}"
-            sha="$(curl -fsSL "$base/checksums.txt" | awk -v a="$asset" '$2==a {print $1}')"
-            just _fetch "$base/$asset" "$tmp/tflint.zip" "$sha"
-            unzip -q "$tmp/tflint.zip" -d "$tmp"
-            install -m 755 "$tmp/tflint" "$HOME/.local/bin/tflint"
-            rm -rf "$tmp"
+            install_release tflint "{{tflint_version}}" "$HOME/.local/bin/tflint" \
+                "$base/$asset" "$(gh_sha_checksums "$base" "$asset")" zip
         else
             echo "  ⚠ unsupported arch for tflint: $(uname -m)"
         fi
@@ -681,16 +630,11 @@ nvim-tools:
 
     # taplo — TOML linter/formatter. Pinned binary (gzip of the raw executable);
     # no upstream checksum, so the SHA256 is pinned locally (x86_64 only).
-    if ! have taplo; then
+    if bin_needs_update taplo taplo "{{taplo_version}}"; then
         if [[ "$(uname -m)" == "x86_64" ]]; then
-            echo "  → installing taplo {{taplo_version}} (pinned binary)"
-            tmp="$(mktemp -d)"
-            just _fetch \
+            install_release taplo "{{taplo_version}}" "$HOME/.local/bin/taplo" \
                 "https://github.com/tamasfe/taplo/releases/download/{{taplo_version}}/taplo-linux-x86_64.gz" \
-                "$tmp/taplo.gz" "{{taplo_sha256}}"
-            gunzip -f "$tmp/taplo.gz"
-            install -m 755 "$tmp/taplo" "$HOME/.local/bin/taplo"
-            rm -rf "$tmp"
+                "{{taplo_sha256}}" gz
         else
             echo "  ⚠ taplo pinned binary is x86_64 only; skipping on $(uname -m)"
         fi
@@ -698,22 +642,18 @@ nvim-tools:
 
     # gitleaks — secret scanner (CI uses it). Pinned binary, verified against
     # the upstream checksums file.
-    if ! have gitleaks; then
+    if bin_needs_update gitleaks gitleaks "{{gitleaks_version}}"; then
         case "$(uname -m)" in
             x86_64) gl_arch="x64" ;;
             aarch64 | arm64) gl_arch="arm64" ;;
             *) gl_arch="" ;;
         esac
         if [[ -n "$gl_arch" ]]; then
-            echo "  → installing gitleaks {{gitleaks_version}} (pinned binary)"
-            tmp="$(mktemp -d)"
             asset="gitleaks_{{gitleaks_version}}_linux_${gl_arch}.tar.gz"
             base="https://github.com/gitleaks/gitleaks/releases/download/v{{gitleaks_version}}"
-            sha="$(curl -fsSL "$base/gitleaks_{{gitleaks_version}}_checksums.txt" | awk -v a="$asset" '$2 == a {print $1}')"
-            just _fetch "$base/$asset" "$tmp/gitleaks.tar.gz" "$sha"
-            tar xf "$tmp/gitleaks.tar.gz" -C "$tmp" gitleaks
-            install -m 755 "$tmp/gitleaks" "$HOME/.local/bin/gitleaks"
-            rm -rf "$tmp"
+            sha="$(gh_sha_checksums "$base" "$asset" "gitleaks_{{gitleaks_version}}_checksums.txt")"
+            install_release gitleaks "{{gitleaks_version}}" "$HOME/.local/bin/gitleaks" \
+                "$base/$asset" "$sha" tar
         else
             echo "  ⚠ unsupported arch for gitleaks: $(uname -m)"
         fi
@@ -842,10 +782,6 @@ install:
 
     echo "── Neovim plugins ──"
     just nvim-plugins
-    echo ""
-
-    echo "── Neovim linters/formatters ──"
-    just nvim-tools
     echo ""
 
     echo "── Yazi theme ──"

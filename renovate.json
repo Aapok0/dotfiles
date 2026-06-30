@@ -40,6 +40,16 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\w+_version\\s*:=\\s*\"(?<currentValue>[^\"]+)\""
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Pinned commit refs in justfile (annotated with # renovate: datasource=git-refs)",
+      "managerFilePatterns": ["/(^|/)justfile$/"],
+      "datasourceTemplate": "git-refs",
+      "currentValueTemplate": "main",
+      "matchStrings": [
+        "# renovate: datasource=git-refs depName=(?<depName>\\S+)\\s+\\w+_commit\\s*:=\\s*\"(?<currentDigest>[0-9a-f]{40})\""
+      ]
     }
   ]
 }
