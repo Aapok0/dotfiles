@@ -25,22 +25,25 @@ cd $HOME/Workspace/dotfiles
 just install
 ```
 
-This auto-detects your OS and runs the appropriate package manager, then stows all configs, clones ZSH plugins and personal tools, installs TPM, the yazi theme, and imports shell history into atuin.
+This auto-detects your OS and runs the appropriate package manager (including linters/formatters via `lint-tools`), then stows all configs, clones ZSH plugins and personal tools, installs TPM, the yazi theme, and imports shell history into atuin.
 
 ### Manual / step-by-step
 
 ```bash
 just pacman-install        # or apt-install / dnf-install / brew-install
+just tfswitch-install      # Linux only — Terraform version manager
 just font-install
 just stow-all              # symlink all configs
-just zsh-plugins           # clone ZSH plugins
+just zsh-plugins           # sync pinned ZSH plugins
 just tools-clone           # clone personal shell tools (~/Workspace/tools)
-just tpm-install           # clone tmux plugin manager
+just tpm-install           # sync TPM + tmux plugins
 just set-shell             # change default shell to zsh
 just yazi-theme            # install yazi Catppuccin theme
 just atuin-import          # import shell history into atuin
 just check                 # verify core tools are installed
 ```
+
+`pacman-install`, `apt-install`, and `dnf-install` each call `lint-tools` at the end ([Linters & formatters](#linters--formatters)). Pinned binaries reinstall when Renovate bumps their version in the justfile.
 
 After install, open tmux and press `prefix + I` to install tmux plugins, then `exec zsh` to reload your shell.
 
@@ -58,7 +61,7 @@ A [justfile](justfile) automates common operations:
 
 | Command | Description |
 |---|---|
-| `just install` | **Full setup** — packages, stow, plugins, themes (auto-detects OS) |
+| `just install` | **Full setup** — packages, linters, stow, plugins, themes (auto-detects OS) |
 | `just stow-all` | Stow all configs (uses default terminal) |
 | `just unstow-all` | Remove all symlinks |
 | `just restow-all` | Re-stow all (after adding new files) |
@@ -66,13 +69,14 @@ A [justfile](justfile) automates common operations:
 | `just unstow <name>` | Unstow a single config |
 | `just font-install` | Install JetBrainsMono Nerd Font (auto-detects OS) |
 | `just brew-install` | Install macOS deps via Brewfile |
-| `just apt-install` | Install core deps (Debian) |
-| `just pacman-install` | Install core deps (Arch) |
-| `just dnf-install` | Install core deps (Fedora); per-package dnf, pipx thefuck, prebuilt yazi |
-| `just tfswitch-install` | Install Terraform version manager (replaces distro terraform package) |
-| `just zsh-plugins` | Clone ZSH plugins (skips existing) |
+| `just apt-install` | Install core deps + `lint-tools` (Debian) |
+| `just pacman-install` | Install core deps + `lint-tools` (Arch) |
+| `just dnf-install` | Install core deps + `lint-tools` (Fedora) |
+| `just lint-tools` | Linters/formatters only (also run by the `*-install` recipes) |
+| `just tfswitch-install` | Install Terraform version manager (replaces distro `terraform` package) |
+| `just zsh-plugins` | Sync pinned ZSH plugins and fzf-git.sh |
 | `just tools-clone` | Clone [personal tools](https://github.com/Aapok0/tools) to `~/Workspace/tools` |
-| `just tpm-install` | Clone TPM for tmux (skips if exists) |
+| `just tpm-install` | Sync TPM for tmux, then install tmux plugins |
 | `just set-shell` | Set default shell to zsh (no-op if already zsh) |
 | `just yazi-theme` | Install yazi Catppuccin theme |
 | `just atuin-import` | Import shell history into atuin |
@@ -177,6 +181,35 @@ These tools are integrated into the ZSH config and expected to be installed:
 | [procs](https://github.com/dalance/procs) | Process viewer |
 | [gh](https://cli.github.com/) | GitHub CLI |
 | [just](https://github.com/casey/just) | Task runner |
+| [age](https://github.com/FiloSottile/age) | File encryption (used with [sops](https://github.com/getsops/sops)) |
+| [tfswitch](https://github.com/warrensbox/terraform-switcher) | Terraform version manager (Linux; replaces a single `terraform` package) |
+
+### DevOps
+
+| Tool | Purpose |
+|---|---|
+| [ansible](https://docs.ansible.com/) | Configuration management |
+| [kubectl](https://kubernetes.io/docs/reference/kubectl/) | Kubernetes CLI |
+| [helm](https://helm.sh/) | Kubernetes package manager |
+
+### Linters & formatters
+
+Installed by `lint-tools` (bundled into `*-install` on Linux, Brewfile on macOS). Used by Neovim (conform.nvim / nvim-lint) and CI.
+
+| Tool | Purpose |
+|---|---|
+| [shellcheck](https://www.shellcheck.net/) | Shell script linter |
+| [shfmt](https://github.com/mvdan/sh) | Shell formatter |
+| [stylua](https://github.com/JohnnyMorganz/StyLua) | Lua formatter |
+| [luacheck](https://github.com/lunarmodules/luacheck) | Lua linter |
+| [taplo](https://taplo.tamasfe.dev/) | TOML linter/formatter |
+| [gitleaks](https://github.com/gitleaks/gitleaks) | Secret scanner |
+| [ruff](https://docs.astral.sh/ruff/) | Python linter/formatter |
+| [ty](https://docs.astral.sh/ty/) | Python type checker |
+| [prettier](https://prettier.io/) | JS/TS/CSS/HTML formatter |
+| [hadolint](https://github.com/hadolint/hadolint) | Dockerfile linter |
+| [tflint](https://github.com/terraform-linters/tflint) | Terraform linter |
+| [ansible-lint](https://ansible.readthedocs.io/projects/lint/) | Ansible linter |
 
 ### Personal tools
 
@@ -192,7 +225,7 @@ A [Brewfile](Brewfile) is included for one-command macOS setup:
 brew bundle --file=Brewfile
 ```
 
-This installs all CLI tools, fonts, the default terminal emulator, and linters/formatters.
+This installs all CLI tools, fonts, the default terminal emulator (Ghostty), age, and linters/formatters.
 
 ## Font
 

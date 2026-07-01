@@ -50,6 +50,7 @@ brew "terraform"
 brew "ansible"
 brew "kubectl"
 brew "helm"
+brew "age"        # encryption for sops
 
 # Linters & formatters (used by nvim-lint + conform.nvim; conform/nvim-lint
 # resolve these from $PATH, so a system install also covers Neovim)
@@ -61,6 +62,7 @@ brew "taplo"
 brew "gitleaks"
 brew "prettier"
 brew "ruff"
+brew "ty"
 brew "hadolint"
 brew "tflint"
 brew "ansible-lint"
