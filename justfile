@@ -17,7 +17,7 @@ core_dirs := "bat gitconfig nvim starship tmux tmux-tools vim zsh lazygit yazi a
 # pin a literal SHA256 that Renovate CANNOT refresh — its PR is left un-automerged;
 # regenerate the hash with:  curl -fsSL <download-url> | sha256sum
 # The other tools verify against an upstream checksums file, so no local hash.
-# Pinned release binaries are x86_64/amd64 (ruff/hadolint/tflint also do aarch64).
+# Pinned release binaries are x86_64/amd64 (ruff/ty/hadolint/tflint also do aarch64).
 
 # renovate: datasource=github-releases depName=dandavison/delta
 delta_version := "0.19.2"
@@ -51,6 +51,9 @@ prettier_version := "3.9.1"
 
 # renovate: datasource=github-releases depName=astral-sh/ruff
 ruff_version := "0.15.20"
+
+# renovate: datasource=github-releases depName=astral-sh/ty
+ty_version := "0.0.55"
 
 # renovate: datasource=github-releases depName=hadolint/hadolint
 hadolint_version := "2.14.0"
@@ -173,7 +176,7 @@ apt-install:
         build-essential cmake nodejs npm python3 \
         ripgrep fzf fd-find bat \
         direnv thefuck tldr \
-        btop entr xclip wl-clipboard jq \
+        btop entr xclip wl-clipboard jq age \
         ffmpeg p7zip-full poppler-utils imagemagick \
         ansible kubectl helm
 
@@ -249,7 +252,7 @@ pacman-install:
         base-devel cmake nodejs npm python rust \
         ripgrep fzf fd bat eza zoxide starship dust procs \
         atuin direnv thefuck tldr \
-        lazygit yazi btop entr xclip wl-clipboard jq github-cli \
+        lazygit yazi btop entr xclip wl-clipboard jq github-cli age \
         ffmpeg p7zip poppler imagemagick \
         ansible kubectl helm
     just lint-tools
@@ -274,7 +277,7 @@ dnf-install:
         neovim tmux zsh git git-delta stow curl \
         gcc make cmake nodejs npm python3 cargo \
         ripgrep fzf fd-find bat zoxide \
-        direnv btop entr xclip wl-clipboard jq gh \
+        direnv btop entr xclip wl-clipboard jq gh age \
         ffmpeg p7zip p7zip-plugins poppler-utils ImageMagick \
         ansible-core kubectl helm procs tealdeer python3-setuptools du-dust; do
         dnf_install "$pkg"
@@ -555,6 +558,22 @@ lint-tools:
         fi
     fi
 
+    # ty — pinned prebuilt binary (Astral Python type checker); same pattern as ruff.
+    if bin_needs_update ty ty "{{ty_version}}"; then
+        case "$(uname -m)" in
+            x86_64) ty_arch="x86_64-unknown-linux-gnu" ;;
+            aarch64 | arm64) ty_arch="aarch64-unknown-linux-gnu" ;;
+            *) ty_arch="" ;;
+        esac
+        if [[ -n "$ty_arch" ]]; then
+            url="https://github.com/astral-sh/ty/releases/download/{{ty_version}}/ty-${ty_arch}.tar.gz"
+            install_release ty "{{ty_version}}" "$HOME/.local/bin/ty" \
+                "$url" "$(gh_sha_sidecar "$url")" tar
+        else
+            echo "  ⚠ unsupported arch for ty: $(uname -m)"
+        fi
+    fi
+
     # ansible-lint — pipx fallback (official recommended) when not in repos
     if ! have ansible-lint; then
         echo "  → installing ansible-lint (pipx)"
@@ -659,7 +678,7 @@ lint-tools:
         fi
     fi
 
-    echo "  ✓ nvim linters/formatters installed"
+    echo "  ✓ linters/formatters installed"
 
 # Set default shell to zsh (no-op if already zsh)
 set-shell:
