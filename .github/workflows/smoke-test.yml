@@ -1,7 +1,7 @@
 name: smoke-test
 
 # Container smoke tests for install recipes. Two jobs:
-#   - static: always runs — justfile parse + Brewfile validity (brew on Linux).
+#   - static: always runs — justfile parse + Brewfile resolve check (brew on Linux).
 #   - lint-tools-smoke: matrix over debian/fedora/arch; gated on relevant
 #     changes but the job always reports so it can be a required check.
 #
@@ -34,7 +34,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@841d750a0ed9262d3c3ca31f2173974696bc261a # main
 
       - name: Verify Brewfile
-        run: brew bundle check --file=Brewfile --verbose
+        run: tests/run brewfile
 
   lint-tools-smoke:
     name: lint-tools (${{ matrix.distro }})
@@ -55,7 +55,7 @@ jobs:
           files="$(git diff --name-only "$base" HEAD)"
           printf 'changed files:\n%s\n' "$files"
           if printf '%s\n' "$files" | grep -qE \
-            '^(justfile|Brewfile|scripts/justlib\.sh|tests/(run|lint-tools-smoke)\.sh$|\.github/workflows/smoke-test\.yml)'; then
+            '^(justfile|Brewfile|scripts/justlib\.sh|tests/run$|tests/(brewfile-smoke|lint-tools-smoke)\.sh$|\.github/workflows/smoke-test\.yml)$'; then
             echo "relevant=true" >>"$GITHUB_OUTPUT"
           else
             echo "relevant=false" >>"$GITHUB_OUTPUT"
