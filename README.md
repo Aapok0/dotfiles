@@ -227,6 +227,24 @@ brew bundle --file=Brewfile
 
 This installs all CLI tools, fonts, the default terminal emulator (Ghostty), age, and linters/formatters.
 
+## CI
+
+Pull requests run two smoke-test jobs (see [`.github/workflows/smoke-test.yml`](.github/workflows/smoke-test.yml)):
+
+| Job | When | What |
+|-----|------|------|
+| **static checks** | always | `just --summary`, `brew bundle check` (Homebrew on Linux) |
+| **lint-tools** (debian / fedora / arch) | `justfile`, `Brewfile`, `justlib.sh`, or test harness changes | `just lint-tools` in distro containers |
+
+The lint-tools matrix is gated on relevant file changes but **always reports success** when skipped, so both jobs are safe to mark as required in branch protection.
+
+Run locally:
+
+```bash
+tests/run lint-tools          # all three distros
+tests/run lint-tools debian     # one distro
+```
+
 ## Font
 
 All configs use **JetBrainsMono Nerd Font**, installed automatically by `just install` (or `just font-install`):
