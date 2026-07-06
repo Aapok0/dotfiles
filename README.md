@@ -31,7 +31,7 @@ This auto-detects your OS and runs the appropriate package manager (including li
 
 ```bash
 just pacman-install        # or apt-install / dnf-install / brew-install
-just tfswitch-install      # Linux only — Terraform version manager
+just tfswitch-install      # Linux — pinned binary; macOS: via Brewfile
 just font-install
 just stow-all              # symlink all configs
 just zsh-plugins           # sync pinned ZSH plugins
@@ -73,7 +73,7 @@ A [justfile](justfile) automates common operations:
 | `just pacman-install` | Install core deps + `lint-tools` (Arch) |
 | `just dnf-install` | Install core deps + `lint-tools` (Fedora) |
 | `just lint-tools` | Linters/formatters only (also run by the `*-install` recipes) |
-| `just tfswitch-install` | Install Terraform version manager (replaces distro `terraform` package) |
+| `just tfswitch-install` | Install Terraform version manager (Linux; macOS via Brewfile) |
 | `just zsh-plugins` | Sync pinned ZSH plugins and fzf-git.sh |
 | `just tools-clone` | Clone [personal tools](https://github.com/Aapok0/tools) to `~/Workspace/tools` |
 | `just tpm-install` | Sync TPM for tmux, then install tmux plugins |
@@ -182,7 +182,7 @@ These tools are integrated into the ZSH config and expected to be installed:
 | [gh](https://cli.github.com/) | GitHub CLI |
 | [just](https://github.com/casey/just) | Task runner |
 | [age](https://github.com/FiloSottile/age) | File encryption (used with [sops](https://github.com/getsops/sops)) |
-| [tfswitch](https://github.com/warrensbox/terraform-switcher) | Terraform version manager (Linux; replaces a single `terraform` package) |
+| [tfswitch](https://github.com/warrensbox/terraform-switcher) | Terraform version manager (Linux: pinned binary; macOS: Brewfile) |
 
 ### DevOps
 

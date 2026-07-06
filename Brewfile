@@ -1,6 +1,9 @@
 # Brewfile — macOS dependencies
 # Install everything: brew bundle --file=Brewfile
 
+# Taps
+tap "warrensbox/tap"
+
 # Terminal emulators (install your preferred one)
 # Default: ghostty. To install others: brew install --cask kitty wezterm
 #cask "kitty"
@@ -43,7 +46,7 @@ brew "tldr"       # simplified man pages
 brew "just"
 
 # DevOps & Cloud
-brew "terraform"
+cask "tfswitch"   # Terraform version manager
 brew "ansible"
 brew "kubectl"
 brew "helm"
