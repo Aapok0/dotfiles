@@ -1,8 +1,9 @@
 # Brewfile — macOS dependencies
 # Install everything: brew bundle --file=Brewfile
 
-# Taps
-tap "homebrew/cask-fonts"
+# Taps (trusted: required since Homebrew 6 tap-trust enforcement)
+tap "warrensbox/tap", trusted: true
+tap "terraform-linters/tap", trusted: true
 
 # Terminal emulators (install your preferred one)
 # Default: ghostty. To install others: brew install --cask kitty wezterm
@@ -46,7 +47,7 @@ brew "tldr"       # simplified man pages
 brew "just"
 
 # DevOps & Cloud
-brew "terraform"
+cask "tfswitch"   # Terraform version manager
 brew "ansible"
 brew "kubectl"
 brew "helm"

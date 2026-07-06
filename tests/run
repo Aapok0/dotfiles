@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Run smoke tests locally.
+#
+# Usage:
+#   tests/run [tier] [distro...]
+#     tier    lint-tools | brewfile   (default: lint-tools)
+#     distro  arch | debian | fedora   (lint-tools only; default: all three)
+#
+# brewfile runs on the host and needs Homebrew (macOS or Linuxbrew). Container
+# tiers use $RUNTIME (default: docker), e.g. RUNTIME="sudo docker" tests/run ...
+#
+# Exit codes:
+#   0 - success
+#   1 - error
+#   2 - invalid usage
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+tier=${1:-lint-tools}
+shift || true
+
+case "$tier" in
+    brewfile)
+        if ! command -v brew &>/dev/null; then
+            echo "brew not found — install Homebrew (macOS or Linux) to run brewfile smoke" >&2
+            exit 2
+        fi
+        exec bash tests/brewfile-smoke.sh
+        ;;
+    lint-tools)
+        distros=("$@")
+        [ ${#distros[@]} -gt 0 ] || distros=(debian fedora arch)
+
+        read -r -a runtime <<<"${RUNTIME:-docker}"
+        declare -A IMG=(
+            [debian]=debian:stable
+            [fedora]=fedora:latest
+            [arch]=archlinux:latest
+        )
+
+        rc=0
+        for d in "${distros[@]}"; do
+            img=${IMG[$d]:?unknown distro: $d (use arch|debian|fedora)}
+            echo "==================== $d ($img) / $tier ===================="
+            # ':z' relabels the bind mount for SELinux hosts; harmless elsewhere.
+            "${runtime[@]}" run --rm -v "$PWD:/repo:ro,z" "$img" \
+                bash "/repo/tests/lint-tools-smoke.sh" "$d" || rc=1
+        done
+        exit "$rc"
+        ;;
+    *)
+        echo "unknown tier: $tier (use lint-tools|brewfile)" >&2
+        exit 2
+        ;;
+esac

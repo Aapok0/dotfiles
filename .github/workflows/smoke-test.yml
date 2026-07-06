@@ -1,0 +1,67 @@
+name: smoke-test
+
+# Container smoke tests for install recipes. Two jobs:
+#   - static: always runs — justfile parse + Brewfile resolve check (brew on Linux).
+#   - lint-tools-smoke: matrix over debian/fedora/arch; gated on relevant
+#     changes but the job always reports so it can be a required check.
+#
+# Relevant = justfile, Brewfile, justlib.sh, or the test harness itself.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install just
+        run: sudo apt-get update && sudo apt-get install -y just
+
+      - name: Verify justfile parses
+        run: just --summary
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@841d750a0ed9262d3c3ca31f2173974696bc261a # main
+
+      - name: Verify Brewfile
+        run: tests/run brewfile
+
+  lint-tools-smoke:
+    name: lint-tools (${{ matrix.distro }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [debian, fedora, arch]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Detect relevant changes
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          files="$(git diff --name-only "$base" HEAD)"
+          printf 'changed files:\n%s\n' "$files"
+          if printf '%s\n' "$files" | grep -qE \
+            '^(justfile|Brewfile|scripts/justlib\.sh|tests/run$|tests/(brewfile-smoke|lint-tools-smoke)\.sh$|\.github/workflows/smoke-test\.yml)$'; then
+            echo "relevant=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >>"$GITHUB_OUTPUT"
+            echo "::notice::No install/test changes — skipping lint-tools container run."
+          fi
+
+      - name: lint-tools smoke
+        if: steps.changed.outputs.relevant == 'true'
+        run: tests/run lint-tools ${{ matrix.distro }}
