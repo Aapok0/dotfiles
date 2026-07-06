@@ -24,7 +24,7 @@ delta_version := "0.19.2"
 delta_sha256 := "ea4f0222950ee750a3d38dd80d03bce4cee07a3f63928fc47548383bcaf23093"
 
 # renovate: datasource=github-releases depName=ajeetdsouza/zoxide
-zoxide_version := "0.9.9"
+zoxide_version := "0.10.0"
 zoxide_sha256 := "4ff057d3c4d957946937274c2b8be7af2a9bbae7f90a1b5e9baaa7cb65a20caa"
 
 # renovate: datasource=github-releases depName=sxyazi/yazi
@@ -38,7 +38,7 @@ starship_version := "1.26.0"
 atuin_version := "18.16.1"
 
 # renovate: datasource=github-releases depName=jesseduffield/lazygit
-lazygit_version := "0.62.2"
+lazygit_version := "0.63.0"
 
 # renovate: datasource=github-releases depName=warrensbox/terraform-switcher
 tfswitch_version := "1.19.0"
@@ -47,13 +47,13 @@ tfswitch_version := "1.19.0"
 stylua_version := "2.5.2"
 
 # renovate: datasource=npm depName=prettier
-prettier_version := "3.9.1"
+prettier_version := "3.9.4"
 
 # renovate: datasource=github-releases depName=astral-sh/ruff
 ruff_version := "0.15.20"
 
 # renovate: datasource=github-releases depName=astral-sh/ty
-ty_version := "0.0.55"
+ty_version := "0.0.56"
 
 # renovate: datasource=github-releases depName=hadolint/hadolint
 hadolint_version := "2.14.0"
