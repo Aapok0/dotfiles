@@ -1,9 +1,6 @@
 # Brewfile — macOS dependencies
 # Install everything: brew bundle --file=Brewfile
 
-# Taps
-tap "homebrew/cask-fonts"
-
 # Terminal emulators (install your preferred one)
 # Default: ghostty. To install others: brew install --cask kitty wezterm
 #cask "kitty"

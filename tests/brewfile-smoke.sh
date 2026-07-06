@@ -18,7 +18,14 @@ while IFS= read -r line; do
     [[ "$line" =~ ^tap\ \"([^\"]+)\" ]] || continue
     tap="${BASH_REMATCH[1]}"
     echo "Tapping $tap..."
-    brew tap "$tap"
+    if ! tap_out=$(brew tap "$tap" 2>&1); then
+        if grep -qiE 'deprecated|empty' <<<"$tap_out"; then
+            echo "  ⊘ $tap (deprecated, skipping)"
+            continue
+        fi
+        echo "$tap_out" >&2
+        exit 1
+    fi
 done <"$BREWFILE"
 
 echo "Verifying formulae..."
