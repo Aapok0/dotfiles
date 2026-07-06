@@ -56,7 +56,7 @@ jobs:
         ghostty/bin/ghostty-launch
         scripts/justlib.sh
         tests/lint-tools-smoke.sh
-        tests/run.sh
+        tests/run
         tmux-tools/usr/local/bin/tmuxf
         tmux-tools/usr/local/bin/tmuxz
     steps:
