@@ -26,6 +26,10 @@ while IFS= read -r line; do
         echo "$tap_out" >&2
         exit 1
     fi
+    if [[ "$tap" != homebrew/* ]]; then
+        echo "Trusting $tap..."
+        brew trust "$tap"
+    fi
 done <"$BREWFILE"
 
 echo "Verifying formulae..."
