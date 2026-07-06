@@ -3,6 +3,7 @@
 
 # Taps
 tap "warrensbox/tap"
+tap "terraform-linters/tap"
 
 # Terminal emulators (install your preferred one)
 # Default: ghostty. To install others: brew install --cask kitty wezterm
