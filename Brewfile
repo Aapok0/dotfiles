@@ -4,6 +4,7 @@
 # Taps (trusted: required since Homebrew 6 tap-trust enforcement)
 tap "warrensbox/tap", trusted: true
 tap "terraform-linters/tap", trusted: true
+tap "azure/kubelogin", trusted: true
 
 # Terminal emulators (install your preferred one)
 # Default: ghostty. To install others: brew install --cask kitty wezterm
@@ -52,6 +53,7 @@ brew "ansible"
 brew "kubectl"
 brew "helm"
 brew "age"        # encryption for sops
+brew "kubelogin"
 
 # Linters & formatters (used by nvim-lint + conform.nvim; conform/nvim-lint
 # resolve these from $PATH, so a system install also covers Neovim)
