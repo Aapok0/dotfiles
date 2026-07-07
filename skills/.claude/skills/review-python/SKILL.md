@@ -26,7 +26,7 @@ Analyze the provided Python code thoroughly and evaluate it against the followin
 * Ensure modern Python features are utilized correctly (e.g., robust type hinting, context managers for resource handling, f-strings, and proper exception hierarchies).
 
 ### 4. Maintainability & Readability
-* Evaluate naming conventions, the clarity/flow of the logic, and overall codebase cleanlines.
+* Evaluate naming conventions, the clarity/flow of the logic, and overall codebase cleanliness.
 * Assess the adequacy of documentation, including docstrings, inline comments, and self-documenting code practices appropriate for a maintainable codebase.
 
 ### 5. Security & Edge Cases
