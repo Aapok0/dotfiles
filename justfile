@@ -102,7 +102,7 @@ stow-all:
     @for dir in {{terminal}} {{core_dirs}}; do \
         if [ -d "$dir" ]; then \
             echo "  → $dir"; \
-            if [ "$dir" = "atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
+            if [ "$dir" = "atuin" ] && [ ! -L "$HOME/.config/atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
                 echo "  → replacing installer atuin config with dotfiles version"; \
                 rm -f "$HOME/.config/atuin/config.toml"; \
             fi; \
@@ -126,7 +126,7 @@ restow-all:
     @for dir in {{terminal}} {{core_dirs}}; do \
         if [ -d "$dir" ]; then \
             echo "  → $dir"; \
-            if [ "$dir" = "atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
+            if [ "$dir" = "atuin" ] && [ ! -L "$HOME/.config/atuin" ] && [ -f "$HOME/.config/atuin/config.toml" ] && [ ! -L "$HOME/.config/atuin/config.toml" ]; then \
                 echo "  → replacing installer atuin config with dotfiles version"; \
                 rm -f "$HOME/.config/atuin/config.toml"; \
             fi; \
@@ -139,7 +139,7 @@ stow name:
     #!/usr/bin/env bash
     if [[ "{{name}}" == "atuin" ]]; then
         target="$HOME/.config/atuin/config.toml"
-        if [[ -f "$target" && ! -L "$target" ]]; then
+        if [[ ! -L "$HOME/.config/atuin" && -f "$target" && ! -L "$target" ]]; then
             echo "  → replacing installer atuin config with dotfiles version"
             rm -f "$target"
         fi
@@ -684,7 +684,11 @@ lint-tools:
 set-shell:
     #!/usr/bin/env bash
     set -euo pipefail
-    current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        current_shell="$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}')"
+    else
+        current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+    fi
     if [[ "$current_shell" == *zsh ]]; then
         echo "  ✓ zsh is already the default shell"
     else

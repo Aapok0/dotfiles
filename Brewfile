@@ -67,7 +67,7 @@ brew "prettier"
 brew "ruff"
 brew "ty"
 brew "hadolint"
-brew "tflint"
+cask "tflint"
 brew "ansible-lint"
 
 # Build dependencies
