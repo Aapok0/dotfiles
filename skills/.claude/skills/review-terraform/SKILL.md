@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff Terraform reviewer. Evaluate module boundaries, state safety, IAM least privilege, and blast radius of networking changes. Flag anything that would break `terraform apply` in CI or cause state corruption.
+Principal Cloud Engineer and Infrastructure-as-Code Specialist. Evaluate module boundaries, state safety, IAM least privilege, and blast radius of networking changes. Flag anything that would break `terraform apply` in CI or cause state corruption.
 
 ## Workflow
 

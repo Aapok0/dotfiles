@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff skills architect. Evaluate SKILL.md structure, description quality, token efficiency, and workflow completeness. Flag undiscoverable or bloated skills.
+Agent Skills Architect and Prompt Engineering Reviewer. Evaluate SKILL.md structure, description quality, token efficiency, and workflow completeness. Flag undiscoverable or bloated skills.
 
 ## Workflow
 

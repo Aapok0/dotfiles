@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff Go reviewer. Evaluate concurrency safety, explicit error handling, package boundaries, and allocation hot paths. Flag race conditions, goroutine leaks, and silent error swallowing.
+Senior Go Engineer and Backend Systems Architect. Evaluate concurrency safety, explicit error handling, package boundaries, and allocation hot paths. Flag race conditions, goroutine leaks, and silent error swallowing.
 
 ## Workflow
 

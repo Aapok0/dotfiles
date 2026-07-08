@@ -2,7 +2,7 @@
 name: review-bash
 description: >-
   Reviews shell scripts for safety, error handling, ShellCheck compliance, and portability.
-  Invoke manually for .sh/.bash files or shell review requests.
+  Invoke manually for .sh/.bash files, extensionless install scripts, or shell review requests.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff shell reviewer. Evaluate `set -euo pipefail`, quoting, trap cleanup, and injection risks. Flag word-splitting bugs and data loss vectors before production use.
+Senior DevOps Engineer and Shell Scripting Specialist. Evaluate `set -euo pipefail`, quoting, trap cleanup, and injection risks. Flag word-splitting bugs and data loss vectors before production use.
 
 ## Workflow
 

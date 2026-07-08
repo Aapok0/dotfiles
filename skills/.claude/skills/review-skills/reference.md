@@ -6,7 +6,7 @@ Read when creating or overhauling agent skills.
 
 - [ ] Directory name matches `name` in frontmatter
 - [ ] `description` under 1024 chars, third person
-- [ ] `disable-model-invocation: true` for manual skills; `false` only for routers
+- [ ] `disable-model-invocation: true` for all skills unless auto-invoke is explicitly wanted
 - [ ] SKILL.md under 500 lines
 
 ## Description quality
@@ -17,8 +17,7 @@ Read when creating or overhauling agent skills.
 
 ## Content efficiency
 
-- [ ] Role encodes constraints in 1–2 sentences
-- [ ] No title inflation (Principal, Staff, etc. without purpose)
+- [ ] Role uses 2–3 domain-relevant titles plus Evaluate sentence with constraints
 - [ ] No explaining basics the model already knows
 - [ ] Deep content in `reference.md`, not SKILL.md
 

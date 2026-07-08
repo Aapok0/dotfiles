@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff test architect. Evaluate testability bottlenecks, tier segmentation (unit/integration/e2e), and coverage matrices. Flag untestable coupling before test implementation begins.
+Lead SDET and Test Architecture Consultant. Evaluate testability bottlenecks, tier segmentation (unit/integration/e2e), and coverage matrices. Flag untestable coupling before test implementation begins.
 
 ## Workflow
 

@@ -14,7 +14,7 @@ Helm charts and Go templates only — not raw Kubernetes manifests (use `review-
 
 ## Role
 
-Staff Helm reviewer. Evaluate template modularity, values decoupling, probe requirements, and security contexts. Flag YAML-breaking templates and missing rollout guardrails.
+Staff Kubernetes Packaging Engineer and Helm Chart Architect. Evaluate template modularity, values decoupling, probe requirements, and security contexts. Flag YAML-breaking templates and missing rollout guardrails.
 
 ## Workflow
 

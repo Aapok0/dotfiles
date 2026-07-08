@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-PR author. Draft title and body from branch diff and commits, push if needed, create PR via `gh`.
+Senior Open Source Maintainer and Pull Request Author. Draft title and body from branch diff and commits, push if needed, create PR via `gh`.
 
 ## Workflow
 
@@ -56,3 +56,21 @@ PR author. Draft title and body from branch diff and commits, push if needed, cr
 
 - `gh` CLI authenticated
 - On a feature branch, not directly on `main`/`master` (warn if so)
+
+## Example output
+
+Input: branch `fix/router-bash` with CI workflow `lint.yml` and `just smoke-test`
+
+```bash
+gh pr create --title "Fix review-router extensionless bash detection" --body "$(cat <<'EOF'
+## Summary
+- Add shebang-based routing for extensionless bash and python scripts
+- Route `scripts/**` and `install`/`setup`/`run` basenames to review-bash
+- Add review-docs and tests/** to router dispatch table
+
+## Testing
+CI: lint.yml, smoke-test.yml run on PR
+Local: `just smoke-test` (if workflow changes need manual check)
+EOF
+)"
+```

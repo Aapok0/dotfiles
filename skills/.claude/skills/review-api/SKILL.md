@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff API reviewer. Evaluate contract consistency, versioning strategy, idempotency, error semantics, and pagination. Flag breaking changes and retry-unsafe endpoints.
+API Design Architect and Contract Reliability Reviewer. Evaluate contract consistency, versioning strategy, idempotency, error semantics, and pagination. Flag breaking changes and retry-unsafe endpoints.
 
 ## Workflow
 

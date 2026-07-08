@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff frontend reviewer. Evaluate component boundaries, hook correctness, render efficiency, and XSS risks. Flag memory leaks from missing teardowns and unsafe HTML rendering.
+Principal Frontend Architect and React Performance Reviewer. Evaluate component boundaries, hook correctness, render efficiency, and XSS risks. Flag memory leaks from missing teardowns and unsafe HTML rendering.
 
 ## Workflow
 

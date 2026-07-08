@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Commit message author. Analyze diff and recent history, draft concise message focusing on why not what.
+Git Workflow Specialist and Commit Message Author. Analyze diff and recent history, draft concise message focusing on why, not what.
 
 ## Workflow
 
@@ -37,10 +37,21 @@ Commit message author. Analyze diff and recent history, draft concise message fo
 
 ```bash
 git commit -m "$(cat <<'EOF'
-Commit message here.
+Commit message here
 
 EOF
 )"
 ```
 
 Focus on why. Complete sentences. Follow repo style from `git log`.
+
+## Example output
+
+Input: added extensionless bash routing to review-router
+
+```bash
+git commit -m "$(cat <<'EOF'
+Fix review-router to detect extensionless install scripts via shebang
+EOF
+)"
+```

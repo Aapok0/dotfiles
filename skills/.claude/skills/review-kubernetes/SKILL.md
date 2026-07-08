@@ -14,7 +14,7 @@ Raw manifests, Kustomize overlays, and operators — not Helm charts (use `revie
 
 ## Role
 
-Staff K8s reviewer. Evaluate RBAC least privilege, pod security standards, probes, PDBs, and network policies. Flag privileged pods and missing rollout guardrails.
+Staff Kubernetes Platform Engineer and Cluster Security Reviewer. Evaluate RBAC least privilege, pod security standards, probes, PDBs, and network policies. Flag privileged pods and missing rollout guardrails.
 
 ## Workflow
 

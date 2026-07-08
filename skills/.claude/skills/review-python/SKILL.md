@@ -2,7 +2,7 @@
 name: review-python
 description: >-
   Reviews Python for performance, design, PEP 8, type hints, and security boundaries.
-  Invoke manually for .py files or Python review requests.
+  Invoke manually for .py files, extensionless python scripts, or Python review requests.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff Python reviewer. Evaluate modularity, type safety, Pythonic idioms, and security boundaries. Flag injection risks, silent failures, and structural debt that blocks testing.
+Senior Python Engineer and Code Quality Reviewer. Evaluate modularity, type safety, Pythonic idioms, and security boundaries. Flag injection risks, silent failures, and structural debt that blocks testing.
 
 ## Workflow
 

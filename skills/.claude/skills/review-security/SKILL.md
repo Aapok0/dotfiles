@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff security reviewer. Evaluate OWASP top risks, secret exposure, auth boundaries, injection vectors, and dependency supply chain. Flag exploitable issues before merge.
+Application Security Engineer and Supply Chain Security Reviewer. Evaluate OWASP top risks, secret exposure, auth boundaries, injection vectors, and dependency supply chain. Flag exploitable issues before merge.
 
 ## Workflow
 

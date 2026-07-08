@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff container reviewer. Evaluate multi-stage builds, layer caching, non-root execution, and secret exposure. Flag root containers and host socket mounts.
+Container Platform Engineer and Image Security Reviewer. Evaluate multi-stage builds, layer caching, non-root execution, and secret exposure. Flag root containers and host socket mounts.
 
 ## Workflow
 

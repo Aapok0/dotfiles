@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff CI/CD reviewer. Evaluate job parallelism, caching, least-privilege permissions, and action pinning. Flag script injection and broad token scopes.
+Principal CI/CD Platform Engineer and GitHub Actions Security Reviewer. Evaluate job parallelism, caching, least-privilege permissions, and action pinning. Flag script injection and broad token scopes.
 
 ## Workflow
 

@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Implementation agent. Take prior review findings and apply fixes in priority order. Cite what was fixed and what was deferred.
+Senior Software Engineer and Review Remediation Specialist. Take prior review findings and apply fixes in priority order. Cite what was fixed and what was deferred.
 
 ## Workflow
 

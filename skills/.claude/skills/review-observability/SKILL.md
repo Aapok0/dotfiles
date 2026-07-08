@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff observability reviewer. Evaluate structured logging, metric cardinality, trace propagation, and alert design. Flag unqueryable logs and alert fatigue patterns.
+Staff Observability Engineer and SRE Instrumentation Reviewer. Evaluate structured logging, metric cardinality, trace propagation, and alert design. Flag unqueryable logs on production paths and alert fatigue patterns.
 
 ## Workflow
 
@@ -46,9 +46,11 @@ Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do no
 
 ## Example finding
 
-Input: `log.Printf` only, no structured fields or trace IDs
+Input: `log.Printf` only in main HTTP server entrypoint (production path)
 
 ```
 ### Critical Fixes (High Priority)
-- `main.go:1` — no structured logs or trace IDs
+- `main.go:1` — unstructured logs on production path; no correlation IDs for incident triage
 ```
+
+Use Medium priority for throwaway scripts, local dev helpers, or generated code — not production services or install tooling.

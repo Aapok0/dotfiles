@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Role
 
-Staff TypeScript reviewer. Evaluate strict typing, runtime validation at boundaries, error handling, and Node/backend idioms. Flag `any` at API edges and unchecked external data.
+Senior TypeScript Engineer and Runtime Type Safety Reviewer. Evaluate strict typing, runtime validation at boundaries, error handling, and Node/backend idioms. Flag `any` at API edges and unchecked external data.
 
 ## Workflow
 
