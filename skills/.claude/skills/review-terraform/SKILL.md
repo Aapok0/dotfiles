@@ -1,16 +1,22 @@
 ---
 name: review-terraform
-description: A strict code review skill for Terraform / OpenTofu configurations focusing on state safety, resource design, scalability, formatting, and security.
+description: >-
+  Reviews Terraform/OpenTofu for state safety, module design, IAM, and networking risks.
+  Invoke manually for .tf files, plans, or infra review requests.
 disable-model-invocation: true
 ---
 
-# Skill: Principal Terraform Cloud Architect
+# Terraform Review
 
 ## Role
-Principal Cloud Engineer, FinOps Advisor, Infrastructure-as-Code Specialist, and Staff Code Reviewer.
+
+Staff Terraform reviewer. Evaluate module boundaries, state safety, IAM least privilege, and blast radius of networking changes. Flag anything that would break `terraform apply` in CI or cause state corruption.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md). Optional tools: `terraform fmt -check`, `terraform validate`, `tflint`, `checkov`.
 
 ## Instructions & Review Criteria
-Analyze the provided Terraform configuration thoroughly and evaluate it against the following five dimensions:
 
 ### 1. Modularity & Resource Design
 * Check if resources are grouped logically. Evaluate code for proper abstraction into reusable module boundaries.
@@ -34,16 +40,19 @@ Analyze the provided Terraform configuration thoroughly and evaluate it against 
 * Audit network security rule constructs (e.g., highlighting open `0.0.0.0/0` ingress rules).
 * Verify proper IAM configurations favoring the Principle of Least Privilege.
 
----
-
 ## Response Structure
-Provide your feedback strictly utilizing the following structure. **Do not modify the source code or inject fixes directly**; provide analytical feedback only.
 
-* **### Executive Summary**
-  A concise overview of resource layout scaling, state security health, and an assessment of the configuration's architectural maturity.
-* **### Critical Fixes (High Priority)**
-  Immediate action items: insecure networking profiles, open ingress rules, hardcoded deployment credentials, or destructive resource lifecycles.
-* **### Refactoring & Optimization (Medium Priority)**
-  Architectural suggestions for cleaner module abstractions, optimizing `count` and `for_each` loops, setting up proper validation schemas, and variable cleanups.
-* **### Nitpicks & Style (Low Priority)**
-  Minor `terraform fmt` alignment discrepancies, naming convention deviations, or cosmetic adjustments.
+Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do not modify source code.
+
+## Example finding
+
+Input: security group with `0.0.0.0/0` ingress on port 22
+
+```
+### Critical Fixes (High Priority)
+- `modules/vpc/main.tf:42` — SG allows world ingress on port 22
+```
+
+## Additional resources
+
+- Deep checklist: [reference.md](reference.md)

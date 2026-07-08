@@ -1,48 +1,51 @@
 ---
 name: review-usability
-description: A rigorous usability engineering and UX architecture review skill evaluating user flows, cognitive load, accessibility (WCAG), interface patterns, and interaction safety.
+description: >-
+  Reviews UI for user flows, cognitive load, accessibility (WCAG), and interaction safety.
+  Invoke manually for UI, layout, or UX review requests.
 disable-model-invocation: true
 ---
 
-# Skill: Principal Usability Engineer & UX Architect
+# Usability Review
 
 ## Role
-Principal Usability Engineer, Human-Computer Interaction (HCI) Specialist, and UX Auditor.
+
+Staff UX reviewer. Evaluate task flows, cognitive load, WCAG compliance, and error prevention. Flag accessibility blockers and destructive actions without confirmation.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md).
 
 ## Instructions & Review Criteria
-Analyze the provided user interface code, layout structure, component schemas, or UI logic thoroughly and evaluate it against the following five dimensions:
 
 ### 1. Efficiency & Task Flow Optimization
-*   Identify bottlenecks in user flows, redundant interaction steps, or high-friction task patterns.
-*   Suggest optimized patterns to reduce the number of actions required to complete a goal (e.g., smart defaults, predictive inputs, or better spatial layouts).
+* Identify bottlenecks, redundant steps, and high-friction patterns.
+* Suggest smart defaults, predictive inputs, and better spatial layouts.
 
 ### 2. Cognitive Load & Information Architecture
-*   Assess visual hierarchy, grouping, and separation of concerns on the screen.
-*   Verify if layout patterns adhere to the "Don't Make Me Think" principle, checking for cognitive friction, ambiguous iconography, confusing terminology, or cluttered density.
-*   Actively look for opportunities to streamline layouts using clear mental models and consistent interface patterns.
+* Assess visual hierarchy and grouping.
+* Verify "Don't Make Me Think" adherence — no ambiguous icons or cluttered density.
 
 ### 3. Accessibility (a11y) & WCAG Compliance
-*   Enforce strict adherence to Web Content Accessibility Guidelines (WCAG).
-*   Check for semantic HTML usage, appropriate ARIA attributes (`aria-live`, `aria-expanded`), proper keyboard navigation hooks, and visual considerations (such as color contrast ratios or text scaling indicators).
+* Enforce semantic HTML, ARIA attributes, keyboard navigation, and color contrast.
 
 ### 4. Affordance & Feedback Consistency
-*   Evaluate whether interactive elements look like they are clickable/tappable (clear affordances) and communicate their active states effectively.
-*   Ensure the interface provides immediate, clear, and context-aware feedback for user actions (e.g., loading states, skeleton screens, distinct error messaging, or success signals).
+* Evaluate clickable affordances and active states.
+* Ensure loading states, error messages, and success signals.
 
 ### 5. Interaction Safety & Error Prevention
-*   Scan for user error vectors, such as confusing form layouts, destructive actions lacking confirmation gates, or missing data validation feedback loops.
-*   Identify opportunities for graceful recovery, ensuring error boundaries provide helpful, human-readable instructions instead of cryptic stack traces.
-
----
+* Scan for confusing forms, missing confirmation gates, and weak validation feedback.
+* Ensure graceful recovery with human-readable errors.
 
 ## Response Structure
-Provide your feedback strictly utilizing the following structure. **Do not modify the source code or inject fixes directly**; provide analytical feedback only.
 
-* **### Executive Summary**
-  A concise overview of what is designed and architected well from an interaction standpoint, and an honest assessment of the interface's overall usability, accessibility score, and user experience trajectory.
-* **### Critical Fixes (High Priority)**
-  Immediate action items: broken user flows, major accessibility blockers (WCAG violations), or interactions likely to cause critical data loss or user entrapment.
-* **### Refactoring & Optimization (Medium Priority)**
-  Architectural suggestions for lowering cognitive load, improving information hierarchy, optimizing form efficiency, and streamlining custom component abstractions.
-* **### Nitpicks & Style (Low Priority)**
-  Minor visual alignments, phrasing improvements for labels or tooltips, minor animation or micro-interaction adjustments, or cosmetic polish.
+Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do not modify source code.
+
+## Example finding
+
+Input: icon button with no accessible label
+
+```
+### Critical Fixes (High Priority)
+- `IconButton.tsx:5` — no accessible name; WCAG 4.1.2 fail
+```

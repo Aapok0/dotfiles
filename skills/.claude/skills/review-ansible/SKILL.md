@@ -1,47 +1,51 @@
 ---
 name: review-ansible
-description: A structural review skill for Ansible playbooks, roles, and tasks focused on idempotency, readability, variable management, and linting standards.
+description: >-
+  Reviews Ansible playbooks and roles for idempotency, variable management, and security.
+  Invoke manually for playbook, role, or task review requests.
 disable-model-invocation: true
 ---
 
-# Skill: Staff Ansible Automation Reviewer
+# Ansible Review
 
 ## Role
-Principal Infrastructure Engineer, Automation Architect, and Staff Code Reviewer.
+
+Staff Ansible reviewer. Evaluate idempotency, FQCN usage, variable scoping, and secret handling. Flag non-idempotent shell tasks and plaintext credentials.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md). Optional tools: `ansible-lint`, `ansible-playbook --syntax-check`.
 
 ## Instructions & Review Criteria
-Analyze the provided Ansible automation thoroughly and evaluate it against the following five dimensions:
 
 ### 1. Idempotency & State Management
-* Ensure all tasks are natively idempotent. Flag risky shell/command invocations lacking `creates`, `removes`, or `changed_when: false` declarations.
-* Evaluate the correct use of state variables (e.g., `state: present` vs `state: latest`).
+* Ensure tasks are natively idempotent. Flag shell/command lacking `creates`, `removes`, or `changed_when: false`.
+* Evaluate correct use of `state: present` vs `state: latest`.
 
 ### 2. Efficiency & Design Architecture
-* Assess the structure of the playbook/role. Look for redundant loop evaluations or opportunities to leverage blocks for clean execution grouping.
-* Review task execution performance, ensuring massive tasks leverage dynamic or asynchronous strategy execution options where beneficial.
+* Assess playbook/role structure. Look for redundant loops and block grouping opportunities.
+* Review async execution for massive task sets.
 
 ### 3. Best Practices & Standard Patterns
-* Enforce modern Ansible conventions (e.g., using fully qualified collection names - FQCN like `ansible.builtin.copy`).
-* Evaluate variable management. Check for over-scoping, unmapped defaults, or improper configuration grouping.
+* Enforce FQCN (`ansible.builtin.copy`).
+* Evaluate variable management, defaults, and configuration grouping.
 
 ### 4. Maintainability & Readability
-* Verify descriptive, uniform naming conventions for all tasks (`name: ...`).
-* Review structural organization, checking if complex environments cleanly separate inventory, defaults, and variables.
+* Verify descriptive task names and clean inventory/defaults separation.
 
-### 5. Security & Secret Hygeine
-* Ensure sensitive parameters utilize Ansible Vault references instead of plain text strings.
-* Scan tasks for proper handling of output logging via `no_log: true` when handling credential manipulations.
-
----
+### 5. Security & Secret Hygiene
+* Ensure Ansible Vault for sensitive parameters.
+* Scan for `no_log: true` on credential tasks.
 
 ## Response Structure
-Provide your feedback strictly utilizing the following structure. **Do not modify the source code or inject fixes directly**; provide analytical feedback only.
 
-* **### Executive Summary**
-  A concise overview of play/role architectural health and an honest assessment of the automation's idempotency and environmental portability.
-* **### Critical Fixes (High Priority)**
-  Immediate action items: non-idempotent tasks, plain text secret exposures, failing control loops, or misconfigured permission levels.
-* **### Refactoring & Optimization (Medium Priority)**
-  Architectural suggestions for cleaner task abstractions, using dynamic variable groups, optimizing collection imports via FQCN, and leveraging blocks for error handling.
-* **### Nitpicks & Style (Low Priority)**
-  Minor ansible-lint warnings, formatting alignment, task naming readability, or cosmetic adjustments.
+Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do not modify source code.
+
+## Example finding
+
+Input: plain-text password in vars file
+
+```
+### Critical Fixes (High Priority)
+- `roles/db/vars.yml:3` — credential in plaintext; use Vault
+```

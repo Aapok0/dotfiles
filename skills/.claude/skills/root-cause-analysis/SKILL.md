@@ -1,49 +1,60 @@
 ---
 name: root-cause-analysis
-description: An intensive forensic debugging skill that analyzes raw logs, stack traces, and application crashes to uncover system root causes and trace fault bubbles.
+description: >-
+  Forensic debugging of logs, stack traces, and crashes to find systemic root causes.
+  Invoke manually when diagnosing incidents or production failures.
 disable-model-invocation: true
 ---
 
-# Skill: Principal Site Reliability & Forensic Debugging Engineer
+# Root Cause Analysis
 
 ## Role
-Principal SRE, Incident Commander, and Systems Failure Analyst.
+
+Staff SRE debugger. Trace failure propagation from symptom to origin, distinguish environmental limits from logic bugs, and produce reproducible isolation steps.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md). Mode A applies — read full surrounding context, not just the stack trace line.
 
 ## Instructions & Review Criteria
-Analyze the provided stack trace, exception dump, system logs, and surrounding application context thoroughly, and diagnose the incident across the following five dimensions:
 
 ### 1. Forensic Isolation & Trace Matching
-*   Map the exact line numbers and exception modules highlighted in the stack trace against the source codebase.
-*   Trace the error propagation bubble upstream through the calling stack layers to identify the explicit point of origin vs. the point of visible failure.
+* Map stack trace lines to source modules.
+* Trace error propagation upstream to origin vs visible failure point.
 
 ### 2. System Architecture & Resource Bottlenecks
-*   Evaluate whether the failure is a localized logic error or an environmental resource limitation (e.g., thread pool exhaustion, database connection leaks, OOM triggers, or unhandled network timeouts).
-*   Assess how peripheral architectural components (caches, message queues, storage layers) could have influenced the failure vector.
+* Evaluate localized logic error vs resource limits (OOM, pool exhaustion, timeouts).
+* Assess influence of caches, queues, and storage layers.
 
 ### 3. Best Practices & Exception Hygiene
-*   Audit error classification and handling rules at the crash site. Identify instances of anti-patterns, such as silent exception swallowing, generic catch-all blocks, or uninformative error overwriting.
-*   Verify whether the system logs contain clear execution context metadata (e.g., correlated request IDs, tenant IDs, or entity states) necessary for debugging.
+* Audit error classification at crash site. Flag silent swallowing and generic catch-alls.
+* Verify logs contain request IDs, tenant IDs, or entity context.
 
 ### 4. Code Execution & Reproducibility
-*   Logically reconstruct the state of application variables, memory pointers, and conditional flags leading up to the crash event.
-*   Establish a reliable, isolated test scenario or reproduction steps to isolate and verify the bug state locally.
+* Reconstruct variable state leading to crash.
+* Establish isolated reproduction steps.
 
 ### 5. Mitigating Blast Radius & Safety
-*   Scan for secondary side effects caused by the failure (e.g., corrupted database states, zombie processes, data leakage, or runaway looping logic).
-*   Verify the existence of circuit breakers, fallback states, or retry limits to safely contain future occurrences and prevent cascading cluster outages.
-
----
+* Scan for secondary effects: corrupted state, zombie processes, data leakage.
+* Verify circuit breakers, fallbacks, and retry limits.
 
 ## Response Structure
-Provide your forensic analysis strictly utilizing the following structure. **Do not modify the codebase directly**; provide systemic diagnostics and architectural corrections.
 
-* **### Root Cause Diagnosis**
-  The explicit, definitive technical explanation of *why* the failure happened, distinguishing clearly between surface symptoms and the actual systemic root cause.
-* **### Critical Fixes (High Priority)**
-  Immediate, actionable code patches or operational configuration changes required to resolve the active issue and restore system stability.
-* **### Reproduction Steps**
-  A clear, step-by-step technical guide or test block strategy to replicate the exact failure state deterministically within an isolated local environment.
-* **### Architectural Mitigations (Medium Priority)**
-  Long-term recommendations to bulletproof the area, including improving exception visibility, implementing circuit breakers, or refining data validation schemas.
-* **### Log & Metric Improvements (Low Priority)**
-  Suggestions for enhancing instrumentation, adding context to logs, or defining custom telemetry alert rules to catch early indicators.
+Provide diagnostics only. **Do not modify codebase.**
+
+* **### Root Cause Diagnosis** — definitive why, symptom vs root cause
+* **### Critical Fixes (High Priority)** — immediate patches or config changes
+* **### Reproduction Steps** — deterministic replication guide
+* **### Architectural Mitigations (Medium Priority)** — long-term hardening
+* **### Log & Metric Improvements (Low Priority)** — instrumentation suggestions
+
+Severity: apply [_shared/severity-rubric.md](../_shared/severity-rubric.md).
+
+## Example finding
+
+Input: OOM kill with connection pool stack trace
+
+```
+### Root Cause Diagnosis
+Connection pool never released — `db.Close()` defer path skipped on early return in `handler.go:142`
+```

@@ -135,6 +135,15 @@ Requires [git-delta](https://github.com/dandavtella/delta). Create credentials a
 | [yazi](yazi/) | Terminal file manager with Catppuccin Mocha flavor, image preview |
 | [atuin](atuin/) | SQLite-backed shell history — fuzzy search, directory-scoped, replaces fzf Ctrl+R |
 
+### AI Skills & Agent Rules
+
+| Config | Description |
+|---|---|
+| [skills](skills/) | Agent skills for code review, debugging, workflows — stows to `~/.claude/skills/` (Cursor-compatible) |
+| [agents](agents/) | Shared agent instructions — stows to `~/AGENTS.md` |
+
+`just install` and `just stow-all` include both packages. Sync `agents/AGENTS.md` into Cursor User Rules for always-on caveman mode.
+
 ### Other
 
 | Config | Description |

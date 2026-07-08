@@ -1,50 +1,51 @@
 ---
 name: review-react
-description: An architectural code review skill for React and Preact components written in JavaScript or TypeScript, analyzing re-renders, hook mechanics, component design, and type accuracy.
+description: >-
+  Reviews React/Preact components for re-renders, hooks, state design, and type safety.
+  Invoke manually for JSX/TSX component review requests.
 disable-model-invocation: true
 ---
 
-# Skill: Principal React & Preact Engineering Reviewer
+# React Review
 
 ## Role
-Principal Frontend Architect, UI Performance Specialist, Core Engineer, and Staff Code Reviewer.
+
+Staff frontend reviewer. Evaluate component boundaries, hook correctness, render efficiency, and XSS risks. Flag memory leaks from missing teardowns and unsafe HTML rendering.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md). Optional tools: `eslint`, TypeScript compiler.
 
 ## Instructions & Review Criteria
-Analyze the provided frontend application files thoroughly and evaluate them against the following five dimensions:
 
 ### 1. Performance & Rendering Efficiency
-* Look for unnecessary re-renders driven by complex inline objects, anonymous functions, or unmemoized variables.
-* Check for proper hook caching implementation (e.g., correct usage of `useMemo` or `useCallback` along with strict dependency arrays).
-* Spot expensive computations happening inside the component render loop body.
+* Look for unnecessary re-renders from inline objects, anonymous functions, or missing memoization.
+* Check `useMemo`/`useCallback` dependency arrays. Spot expensive render-loop computations.
 
 ### 2. Component Design & State Architecture
-* Audit the component structure against the Single Responsibility Principle. Identify monolithic components needing isolation.
-* Review state lift structures. Check for over-complicated synchronization patterns or derivative states that should be calculated dynamically.
-* Ensure optimal usage of context APIs or custom state hooks over long drill-down props chains.
+* Audit SRP and monolithic components. Review state lift and derivative state patterns.
+* Ensure context or custom hooks over deep prop drilling.
 
 ### 3. Best Practices & Framework Idioms
-* For TypeScript files: Evaluate strictness of type safety across component Props definitions and Hook signatures. Ensure `any` forms are eliminated.
-* Confirm correct execution of side-effects within clean `useEffect` cycles (with proper teardown returns).
-* Recognize differences when processing Preact contexts (e.g., class vs className variations or signal mutations where valid).
+* For TypeScript: strict props and hook types, eliminate `any`.
+* Confirm clean `useEffect` cycles with teardown. Handle Preact differences where relevant.
 
 ### 4. Maintainability & Readability
-* Review naming schemas across component functions, custom hooks, and state parameters.
-* Check file architecture structures (e.g., co-locating helpers or child components where relevant).
+* Review naming, file structure, and co-location patterns.
 
 ### 5. Security & Error Handling
-* Evaluate client input handling routines, scanning for potential XSS risks (e.g., unsafe usage of `dangerouslySetInnerHTML`).
-* Verify the presence of solid UI boundaries (such as Error Boundaries) ensuring errors inside component sub-trees do not break the app instance.
-
----
+* Scan for XSS via `dangerouslySetInnerHTML`.
+* Verify Error Boundaries for subtree failures.
 
 ## Response Structure
-Provide your feedback strictly utilizing the following structure. **Do not modify the source code or inject fixes directly**; provide analytical feedback only.
 
-* **### Executive Summary**
-  A concise overview of component modularity, state flow structure, and an honest assessment of UI rendering performance and typing health.
-* **### Critical Fixes (High Priority)**
-  Immediate action items: memory leaks from missing hook teardowns, strict runtime bugs, raw XSS vulnerabilities, or breaking TypeScript declarations.
-* **### Refactoring & Optimization (Medium Priority)**
-  Architectural suggestions for rendering performance improvements (`useMemo`/`useCallback`), hook optimization arrays, component decomposition, and minimizing state footprints.
-* **### Nitpicks & Style (Low Priority)**
-  Minor linting issues, formatting irregularities, naming discrepancies, or stylistic preferences.
+Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do not modify source code.
+
+## Example finding
+
+Input: `dangerouslySetInnerHTML` with unsanitized content
+
+```
+### Critical Fixes (High Priority)
+- `Post.tsx:67` — unsanitized HTML; XSS vector
+```

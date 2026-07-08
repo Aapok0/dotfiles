@@ -1,47 +1,56 @@
 ---
 name: review-helm
-description: An architectural review skill for Helm charts, Go templates, and Kubernetes manifests focused on value abstraction, dry-run safety, structure, and cluster security.
+description: >-
+  Reviews Helm charts for template safety, values abstraction, probes, and cluster security.
+  Invoke manually for Chart.yaml, values.yaml, or template review requests.
 disable-model-invocation: true
 ---
 
-# Skill: Staff Kubernetes & Helm Architect
+# Helm Review
+
+## Focus
+
+Helm charts and Go templates only — not raw Kubernetes manifests (use `review-kubernetes`).
 
 ## Role
-Staff Site Reliability Engineer (SRE), Kubernetes Architect, GitOps Expert, and Staff Code Reviewer.
+
+Staff Helm reviewer. Evaluate template modularity, values decoupling, probe requirements, and security contexts. Flag YAML-breaking templates and missing rollout guardrails.
+
+## Workflow
+
+Follow [_shared/review-workflow.md](../_shared/review-workflow.md). Optional tools: `helm lint`, `helm template` dry-run.
 
 ## Instructions & Review Criteria
-Analyze the provided Helm chart templates, `values.yaml` layouts, or chart definitions thoroughly and evaluate them against the following five dimensions:
 
 ### 1. Efficiency & Resource Optimization
-*   Identify missing or sub-optimal resource requests and limits (`resources.requests` / `resources.limits`) that could trigger OOMKills or cluster starvation.
-*   Suggest optimization paths for scalability configuration (e.g., auto-scaling metrics, replica spreads, and resource scheduling).
+* Identify missing resource requests/limits that trigger OOMKills or starvation.
+* Suggest HPA metrics, replica spreads, and scheduling optimization.
 
 ### 2. Code Design & Architecture
-*   Assess template modularity, DRY compliance, and decoupling of values. Are sub-charts or common helpers utilized correctly?
-*   Verify if template abstractions follow a logical mental model and avoid creating unnecessary configuration complexity.
+* Assess template modularity, DRY compliance, and sub-chart usage.
+* Verify abstractions avoid unnecessary configuration complexity.
 
 ### 3. Best Practices & Helm Idioms
-*   Enforce standard Kubernetes label/annotation schemas (e.g., Helm chart default metadata hooks).
-*   Ensure proper usage of built-ins, Go template actions, pipelines (`quote`, `indent`, `default`), and deterministic template conditions.
+* Enforce standard label/annotation schemas.
+* Ensure proper Go template actions, pipelines, and deterministic conditions.
 
 ### 4. Maintainability & Readability
-*   Evaluate structure within `values.yaml`. Are values intuitively grouped and well-documented with inline schemas?
-*   Check naming conventions and structural organization of charts, templates, and named helpers (`_helpers.tpl`).
+* Evaluate `values.yaml` grouping and inline documentation.
+* Check chart naming and `_helpers.tpl` organization.
 
 ### 5. Security & Cluster Safety
-*   Scan for RBAC privilege escalation vectors, missing network policies, or unsafe host-level volumes.
-*   Verify proper cluster guardrails: enforce read-only root filesystems, drop capabilities, and check readiness/liveness/startup probes to prevent broken rollouts.
-
----
+* Scan for RBAC escalation, missing network policies, or unsafe host volumes.
+* Verify security contexts, dropped capabilities, and health probes.
 
 ## Response Structure
-Provide your feedback strictly utilizing the following structure. **Do not modify the source code or inject fixes directly**; provide analytical feedback only.
 
-* **### Executive Summary**
-  A concise overview of chart engineering quality and an honest assessment of the deployment's cloud-native maturity, template safety, and GitOps readiness.
-* **### Critical Fixes (High Priority)**
-  Immediate action items: missing security context configurations, missing deployment health probes, invalid Go template syntax, or unescaped values breaking YAML structures.
-* **### Refactoring & Optimization (Medium Priority)**
-  Architectural suggestions for better value nesting abstractions, custom named helper refactoring, tighter network policies, or PodDisruptionBudget additions.
-* **### Nitpicks & Style (Low Priority)**
-  Minor indent alignments, naming irregularities, Chart.json metadata updates, or cosmetic formatting tweaks.
+Use [_shared/review-output-format.md](../_shared/review-output-format.md). Do not modify source code.
+
+## Example finding
+
+Input: deployment template without livenessProbe
+
+```
+### Critical Fixes (High Priority)
+- `templates/deployment.yaml:22` — no livenessProbe; broken rollouts undetected
+```
