@@ -43,6 +43,9 @@ lazygit_version := "0.63.0"
 # renovate: datasource=github-releases depName=warrensbox/terraform-switcher
 tfswitch_version := "1.19.0"
 
+# renovate: datasource=github-releases depName=getsops/sops
+sops_version := "3.13.2"
+
 # renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
 stylua_version := "2.5.2"
 
@@ -243,6 +246,7 @@ apt-install:
         cargo install procs 2>/dev/null || echo "Install procs: cargo install procs (requires cargo)"
     fi
 
+    just sops-install
     just lint-tools
 
 # Arch (official repos)
@@ -252,7 +256,7 @@ pacman-install:
         base-devel cmake nodejs npm python rust \
         ripgrep fzf fd bat eza zoxide starship dust procs \
         atuin direnv thefuck tldr \
-        lazygit yazi btop entr xclip wl-clipboard jq github-cli age \
+        lazygit yazi btop entr xclip wl-clipboard jq github-cli age sops \
         ffmpeg p7zip poppler imagemagick \
         ansible kubectl helm
     just lint-tools
@@ -323,22 +327,8 @@ dnf-install:
         "{{yazi_sha256}}" zip "yazi ya"
     export PATH="$HOME/.local/bin:$PATH"
 
+    just sops-install
     just lint-tools
-
-# Install tfswitch (Terraform version manager; replaces distro terraform package)
-tfswitch-install:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    source scripts/justlib.sh
-    if bin_needs_update tfswitch tfswitch "{{tfswitch_version}}"; then
-        asset="terraform-switcher_v{{tfswitch_version}}_linux_amd64.tar.gz"
-        base="https://github.com/warrensbox/terraform-switcher/releases/download/v{{tfswitch_version}}"
-        sha="$(gh_sha_checksums "$base" "$asset" "terraform-switcher_v{{tfswitch_version}}_checksums.txt")"
-        install_release tfswitch "{{tfswitch_version}}" "$HOME/.local/bin/tfswitch" \
-            "$base/$asset" "$sha" tar
-    else
-        echo "  ✓ tfswitch {{tfswitch_version}} (up to date)"
-    fi
 
 # ---------------------------------------------------------------------------
 # Utilities
@@ -679,6 +669,42 @@ lint-tools:
     fi
 
     echo "  ✓ linters/formatters installed"
+
+# Install sops from GitHub (not in Debian/Fedora repos; Arch: pacman extra/sops)
+sops-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source scripts/justlib.sh
+    if ! bin_needs_update sops sops "{{sops_version}}"; then
+        exit 0
+    fi
+    arch="$(uname -m)"
+    case "$arch" in
+        x86_64) asset="sops-v{{sops_version}}.linux.amd64" ;;
+        aarch64) asset="sops-v{{sops_version}}.linux.arm64" ;;
+        *)
+            echo "Pinned sops has no binary for $arch; install manually: https://github.com/getsops/sops/releases"
+            exit 1
+            ;;
+    esac
+    base="https://github.com/getsops/sops/releases/download/v{{sops_version}}"
+    install_release sops "{{sops_version}}" /usr/local/bin/sops \
+        "$base/$asset" "$(gh_sha_checksums "$base" "$asset" "sops-v{{sops_version}}.checksums.txt")" raw
+
+# Install tfswitch (Terraform version manager; replaces distro terraform package)
+tfswitch-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source scripts/justlib.sh
+    if bin_needs_update tfswitch tfswitch "{{tfswitch_version}}"; then
+        asset="terraform-switcher_v{{tfswitch_version}}_linux_amd64.tar.gz"
+        base="https://github.com/warrensbox/terraform-switcher/releases/download/v{{tfswitch_version}}"
+        sha="$(gh_sha_checksums "$base" "$asset" "terraform-switcher_v{{tfswitch_version}}_checksums.txt")"
+        install_release tfswitch "{{tfswitch_version}}" "$HOME/.local/bin/tfswitch" \
+            "$base/$asset" "$sha" tar
+    else
+        echo "  ✓ tfswitch {{tfswitch_version}} (up to date)"
+    fi
 
 # Set default shell to zsh (no-op if already zsh)
 set-shell:
