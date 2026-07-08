@@ -181,7 +181,8 @@ These tools are integrated into the ZSH config and expected to be installed:
 | [procs](https://github.com/dalance/procs) | Process viewer |
 | [gh](https://cli.github.com/) | GitHub CLI |
 | [just](https://github.com/casey/just) | Task runner |
-| [age](https://github.com/FiloSottile/age) | File encryption (used with [sops](https://github.com/getsops/sops)) |
+| [age](https://github.com/FiloSottile/age) | File encryption |
+| [sops](https://github.com/getsops/sops) | Encrypted file editor (YAML, JSON, ENV, …) |
 | [tfswitch](https://github.com/warrensbox/terraform-switcher) | Terraform version manager (Linux: pinned binary; macOS: Brewfile) |
 
 ### DevOps
@@ -225,7 +226,7 @@ A [Brewfile](Brewfile) is included for one-command macOS setup:
 brew bundle --file=Brewfile
 ```
 
-This installs all CLI tools, fonts, the default terminal emulator (Ghostty), age, and linters/formatters.
+This installs all CLI tools, fonts, the default terminal emulator (Ghostty), age, sops, and linters/formatters.
 
 ## CI
 

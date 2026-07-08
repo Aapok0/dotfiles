@@ -53,6 +53,7 @@ brew "ansible"
 brew "kubectl"
 brew "helm"
 brew "age"        # encryption for sops
+brew "sops"       # encrypted file editor
 brew "kubelogin"
 
 # Linters & formatters (used by nvim-lint + conform.nvim; conform/nvim-lint
