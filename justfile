@@ -10,7 +10,7 @@ default:
 terminal := "ghostty"
 
 # Core configs to stow (always included)
-core_dirs := "bat gitconfig nvim starship tmux tmux-tools vim zsh lazygit yazi atuin"
+core_dirs := "agents bat gitconfig nvim skills starship tmux tmux-tools vim zsh lazygit yazi atuin"
 
 # ──── Pinned tool versions (kept current by Renovate; see renovate.json) ──────
 # Renovate bumps the version line on each release. delta/zoxide/yazi/nerd-fonts/taplo
