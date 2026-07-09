@@ -181,7 +181,8 @@ apt-install:
         direnv thefuck tldr \
         btop entr xclip wl-clipboard jq age \
         ffmpeg p7zip-full poppler-utils imagemagick \
-        ansible kubectl helm
+        ansible kubectl helm \
+        ibus ibus-gtk4 ibus-gtk3
 
     if ! command -v eza &>/dev/null; then
         if [[ ! -f /etc/apt/sources.list.d/gierens.list ]]; then
@@ -258,7 +259,8 @@ pacman-install:
         atuin direnv thefuck tldr \
         lazygit yazi btop entr xclip wl-clipboard jq github-cli age sops \
         ffmpeg p7zip poppler imagemagick \
-        ansible kubectl helm
+        ansible kubectl helm \
+        ibus
     just lint-tools
 
 # Fedora — one package per dnf install (already-installed RPMs must not be batched)
@@ -283,7 +285,8 @@ dnf-install:
         ripgrep fzf fd-find bat zoxide \
         direnv btop entr xclip wl-clipboard jq gh age \
         ffmpeg p7zip p7zip-plugins poppler-utils ImageMagick \
-        ansible-core kubectl helm procs tealdeer python3-setuptools du-dust; do
+        ansible-core kubectl helm procs tealdeer python3-setuptools du-dust \
+        ibus ibus-gtk3 ibus-gtk4; do
         dnf_install "$pkg"
     done
 
