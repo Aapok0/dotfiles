@@ -81,6 +81,7 @@ A [justfile](justfile) automates common operations:
 | `just yazi-theme` | Install yazi Catppuccin theme |
 | `just atuin-import` | Import shell history into atuin |
 | `just check` | Verify all core tools are installed |
+| `just ghostty-desktop` | Install Ghostty launch wrapper + desktop entry (Linux dead keys) |
 
 Override the default terminal emulator with `just terminal=ghostty <command>`.
 
@@ -104,6 +105,18 @@ One terminal is stowed by default (configurable via `just terminal=<name>`).
 | [ghostty](ghostty/) | Native-rendering terminal by Mitchell Hashimoto, minimal config, background blur |
 
 All three use **JetBrainsMono Nerd Font** and **Catppuccin Mocha** theme.
+
+### Input method (Linux — Ghostty dead keys)
+
+GTK 4.20+ on Wayland needs an input method for dead keys (`~`, `^`, `'`, etc.) in Ghostty. `just install` installs **IBus** via the distro package recipe (`pacman-install` / `dnf-install` / `apt-install`) and runs `ghostty-desktop`.
+
+**Finnish keyboard layout** is set in Plasma (**System Settings → Keyboard → Layouts**), not via IBus.
+
+| Command | Description |
+|---|---|
+| `just ghostty-desktop` | Install `ghostty-launch` wrapper and menu/desktop entry |
+
+See [ghostty/README.md](ghostty/README.md) for Finnish `~` key sequence and troubleshooting.
 
 ### Editor
 

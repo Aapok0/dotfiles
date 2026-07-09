@@ -79,6 +79,8 @@ fc-list | grep JetBrains
 
 Ghostty uses GTK on Wayland. Since GTK 4.20, dead keys need an input method. On **Fedora KDE**, IBus is the reliable fix; the wrapper falls back to `GTK_IM_MODULE=simple` if IBus is unavailable.
 
+**Finnish layout everywhere:** set in **System Settings → Input & Output → Keyboard → Layouts** (e.g. Finnish). `ghostty-launch` sets IBus IM env only for Ghostty — do not enable IBus as KDE Virtual Keyboard unless you need IME input.
+
 **Finnish `~`:** AltGr + `+` (key right of `P`), release AltGr, then **Space** — tilde is a dead key on the Finnish layout.
 
 This package installs:
