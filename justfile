@@ -35,7 +35,7 @@ yazi_sha256 := "1c9096f0a83b8102c194385f644cdeff93cc8269426163c9d033041ebd537bd2
 starship_version := "1.26.0"
 
 # renovate: datasource=github-releases depName=atuinsh/atuin
-atuin_version := "18.16.1"
+atuin_version := "18.17.0"
 
 # renovate: datasource=github-releases depName=jesseduffield/lazygit
 lazygit_version := "0.63.0"
@@ -50,13 +50,13 @@ sops_version := "3.13.2"
 stylua_version := "2.5.2"
 
 # renovate: datasource=npm depName=prettier
-prettier_version := "3.9.4"
+prettier_version := "3.9.5"
 
 # renovate: datasource=github-releases depName=astral-sh/ruff
-ruff_version := "0.15.20"
+ruff_version := "0.15.21"
 
 # renovate: datasource=github-releases depName=astral-sh/ty
-ty_version := "0.0.56"
+ty_version := "0.0.59"
 
 # renovate: datasource=github-releases depName=hadolint/hadolint
 hadolint_version := "2.14.0"
