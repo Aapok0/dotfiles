@@ -28,41 +28,41 @@ zoxide_version := "0.10.0"
 zoxide_sha256 := "4ff057d3c4d957946937274c2b8be7af2a9bbae7f90a1b5e9baaa7cb65a20caa"
 
 # renovate: datasource=github-releases depName=sxyazi/yazi
-yazi_version := "26.5.6"
+yazi_version := "26.9.1"
 yazi_sha256 := "1c9096f0a83b8102c194385f644cdeff93cc8269426163c9d033041ebd537bd2"
 
 # renovate: datasource=github-releases depName=starship/starship
 starship_version := "1.26.0"
 
 # renovate: datasource=github-releases depName=atuinsh/atuin
-atuin_version := "18.17.0"
+atuin_version := "18.21.0"
 
 # renovate: datasource=github-releases depName=jesseduffield/lazygit
-lazygit_version := "0.63.0"
+lazygit_version := "0.65.0"
 
 # renovate: datasource=github-releases depName=warrensbox/terraform-switcher
 tfswitch_version := "1.19.0"
 
 # renovate: datasource=github-releases depName=getsops/sops
-sops_version := "3.13.2"
+sops_version := "3.13.3"
 
 # renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
 stylua_version := "2.5.2"
 
 # renovate: datasource=npm depName=prettier
-prettier_version := "3.9.5"
+prettier_version := "3.9.6"
 
 # renovate: datasource=github-releases depName=astral-sh/ruff
-ruff_version := "0.15.21"
+ruff_version := "0.16.6"
 
 # renovate: datasource=github-releases depName=astral-sh/ty
-ty_version := "0.0.59"
+ty_version := "0.0.78"
 
 # renovate: datasource=github-releases depName=hadolint/hadolint
-hadolint_version := "2.14.0"
+hadolint_version := "2.15.1"
 
 # renovate: datasource=github-releases depName=terraform-linters/tflint
-tflint_version := "0.63.1"
+tflint_version := "0.64.0"
 
 # renovate: datasource=github-releases depName=tamasfe/taplo
 taplo_version := "0.10.0"
@@ -72,7 +72,7 @@ taplo_sha256 := "8fe196b894ccf9072f98d4e1013a180306e17d244830b03986ee5e8eabeb615
 gitleaks_version := "8.30.1"
 
 # renovate: datasource=github-releases depName=ryanoasis/nerd-fonts
-nerdfonts_version := "3.4.0"
+nerdfonts_version := "3.5.1"
 nerdfonts_jetbrainsmono_sha256 := "ef552a3e638f25125c6ad4c51176a6adcdce295ab1d2ffacf0db060caf8c1582"
 
 # ──── Pinned git dependencies (zsh plugins, tmux/fzf tooling) ─────────────────
