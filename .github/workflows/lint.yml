@@ -11,7 +11,7 @@ env:
   # renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
   STYLUA_VERSION: v2.5.2
   # renovate: datasource=github-releases depName=mvdan/sh
-  SHFMT_VERSION: v3.14.0
+  SHFMT_VERSION: v3.14.1
   # renovate: datasource=github-releases depName=tamasfe/taplo
   TAPLO_VERSION: "0.10.0"
   # renovate: datasource=github-releases depName=gitleaks/gitleaks
