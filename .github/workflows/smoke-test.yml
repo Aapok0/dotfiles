@@ -31,7 +31,7 @@ jobs:
         run: just --summary
 
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@dc7099b3e807f1e2ecc61f3ecabc840eedd5586a # main
+        uses: Homebrew/actions/setup-homebrew@eb02c69dbabdb66ff183c614f4ce7ab3c077592c # main
 
       - name: Verify Brewfile
         run: tests/run brewfile
